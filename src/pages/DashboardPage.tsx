@@ -1,4 +1,5 @@
 import { PageSection } from '../components/common/PageSection';
+import { StatusBadge } from '../components/common/StatusBadge';
 import { members, summaryCards } from '../data/mockData';
 
 export function DashboardPage() {
@@ -22,11 +23,11 @@ export function DashboardPage() {
                 <div>
                   <p className="font-semibold text-slate-900">{member.name}</p>
                   <p className="text-sm text-slate-500">
-                    {member.room} · 보호자 {member.guardian}
+                    {member.group} · {member.room} · 보호자 {member.parentConnection.guardianName ?? '미연결'}
                   </p>
                 </div>
                 <div className="flex items-center gap-3">
-                  <span className="rounded-full bg-slate-100 px-3 py-1 text-xs font-semibold text-slate-700">{member.status}</span>
+                  <StatusBadge status={member.status} />
                   <span className="text-sm text-slate-500">{member.lastCheckTime}</span>
                 </div>
               </div>
