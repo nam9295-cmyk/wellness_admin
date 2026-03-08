@@ -74,7 +74,7 @@ export interface DailySummaryDoc {
   focus?: string;
 }
 
-/** Firestore: conditionNotes/{noteId} */
+/** Firestore: members/{memberId}/conditionNotes/{noteId} */
 export interface ConditionNoteDoc {
   id: string;
   memberId: string;
@@ -174,7 +174,7 @@ export async function fetchDailySummaries(
 
 /**
  * Fetch condition notes (parent-visible) for a member.
- * Firestore collection: 'conditionNotes' where memberId == memberId
+ * Firestore subcollection: 'members/{memberId}/conditionNotes'
  *
  * @param memberId - The member's document ID
  * @param limitCount - Max notes to return (default 20)
@@ -184,8 +184,7 @@ export async function fetchConditionNotes(
   limitCount = 20,
 ): Promise<ConditionNoteDoc[]> {
   const q = query(
-    collection(db, COLLECTIONS.conditionNotes),
-    where('memberId', '==', memberId),
+    collection(db, SUBCOLLECTIONS.conditionNotes(memberId)),
     orderBy('createdAt', 'desc'),
     limit(limitCount),
   );
@@ -198,7 +197,7 @@ export async function fetchConditionNotes(
 
 /**
  * Fetch condition notes (admin-only / private) for a member.
- * Firestore collection: 'conditionNotesPrivate' where memberId == memberId
+ * Firestore subcollection: 'members/{memberId}/conditionNotesPrivate'
  *
  * @param memberId - The member's document ID
  * @param limitCount - Max notes to return (default 20)
@@ -208,8 +207,7 @@ export async function fetchConditionNotesPrivate(
   limitCount = 20,
 ): Promise<ConditionNoteDoc[]> {
   const q = query(
-    collection(db, COLLECTIONS.conditionNotesPrivate),
-    where('memberId', '==', memberId),
+    collection(db, SUBCOLLECTIONS.conditionNotesPrivate(memberId)),
     orderBy('createdAt', 'desc'),
     limit(limitCount),
   );

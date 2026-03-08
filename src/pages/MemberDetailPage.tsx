@@ -1,16 +1,40 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { PageSection } from '../components/common/PageSection';
 import { StatusBadge } from '../components/common/StatusBadge';
-import { careNotes, members } from '../data/mockData';
+import { useConditionNotes } from '../hooks/useConditionNotes';
+import { useBlends } from '../hooks/useBlends';
+import { useMember } from '../hooks/useMembers';
+import type { CareNote } from '../types/member';
 
 export function MemberDetailPage() {
   const { memberId } = useParams();
-  const [localCareNotes, setLocalCareNotes] = useState(careNotes);
+  const { notes: firestoreNotes } = useConditionNotes(memberId);
+  const [localCareNotes, setLocalCareNotes] = useState<CareNote[]>([]);
   const [noteFilter, setNoteFilter] = useState<'all' | 'admin_only' | 'parent_visible'>('all');
   const [newNoteText, setNewNoteText] = useState('');
 
-  const member = members.find((item) => item.id === memberId);
+  // Firestore / mockData 노트가 로드되면 로컬 상태에 동기화
+  useEffect(() => {
+    setLocalCareNotes(firestoreNotes);
+  }, [firestoreNotes]);
+
+  const { member } = useMember(memberId);
+
+  const { blends, isFirestore: isBlendsFirestore } = useBlends();
+
+  // Firestore teas 카탈로그 매칭 (3단계 우선순위)
+  // 1순위: teaId(문서 ID) 매칭 — 가장 안정적
+  // 2순위: 이름 문자열 매칭 — fallback
+  // 3순위: mockData 원본 문자열 — 최종 fallback
+  const matchedById = member?.todayTeaId && isBlendsFirestore
+    ? blends.find((b) => b.id === member.todayTeaId)
+    : null;
+  const matchedByName = !matchedById && isBlendsFirestore
+    ? blends.find((b) => b.name === member?.todayRecommendedTea || b.nameKo === member?.todayRecommendedTea)
+    : null;
+  const matchedBlend = matchedById ?? matchedByName;
+  const todayBlendName = matchedBlend?.nameKo ?? matchedBlend?.name ?? member?.todayRecommendedTea ?? '';
 
   if (!member) {
     return (
@@ -102,7 +126,7 @@ export function MemberDetailPage() {
         <PageSection title="오늘의 추천 블렌드" description="상태 흐름 기반 추천입니다">
           <div className="rounded-3xl bg-gradient-to-br from-teal-600 to-slate-900 p-6 text-white">
             <p className="text-sm text-teal-100">Today's Blend</p>
-            <p className="mt-3 text-3xl font-semibold">{member.todayRecommendedTea}</p>
+            <p className="mt-3 text-3xl font-semibold">{todayBlendName}</p>
             <p className="mt-3 text-sm text-slate-200">
               오늘 상태 흐름에 맞춘 추천입니다
             </p>
@@ -136,7 +160,7 @@ export function MemberDetailPage() {
       <PageSection title="컨디션 노트" description="공개 범위를 조정하면 가족 화면에 즉시 반영됩니다">
         {/* 필터 */}
         {(() => {
-          const memberNotes = localCareNotes.filter((n) => n.memberId === member.id);
+          const memberNotes = localCareNotes;
           const parentCount = memberNotes.filter((n) => n.visibility === 'parent_visible').length;
           const adminCount = memberNotes.filter((n) => n.visibility === 'admin_only').length;
           const filteredNotes = noteFilter === 'all' ? memberNotes : memberNotes.filter((n) => n.visibility === noteFilter);

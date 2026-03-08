@@ -1,12 +1,17 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { StatusBadge } from '../components/common/StatusBadge';
-import { members } from '../data/mockData';
+import { AddMemberModal } from '../components/members/AddMemberModal';
+import { addMember } from '../lib/firebase/writes';
+import { useMembers } from '../hooks/useMembers';
 
 export function MembersPage() {
   const [searchKeyword, setSearchKeyword] = useState('');
   const [statusFilter, setStatusFilter] = useState<'all' | 'Stable' | 'Attention' | 'Check'>('all');
   const [groupFilter, setGroupFilter] = useState<'all' | string>('all');
+  const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+
+  const { members, refetch } = useMembers();
 
   const groups = Array.from(new Set(members.map((member) => member.group)));
   const filteredMembers = members.filter((member) => {
@@ -81,6 +86,13 @@ export function MembersPage() {
             <option value="Check">Check</option>
           </select>
           <span className="ml-auto text-sm text-slate-500">{filteredMembers.length}명</span>
+          <button
+            type="button"
+            onClick={() => setIsAddModalOpen(true)}
+            className="shrink-0 rounded-xl bg-teal-600 px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-teal-700"
+          >
+            + 회원 등록
+          </button>
         </div>
 
         <div className="overflow-x-auto">
@@ -123,6 +135,33 @@ export function MembersPage() {
           ) : null}
         </div>
       </section>
+
+      <AddMemberModal
+        open={isAddModalOpen}
+        onClose={() => setIsAddModalOpen(false)}
+        onSubmit={async (form) => {
+          try {
+            await addMember({
+              name: form.name,
+              group: form.group,
+              room: form.room,
+              age: Number(form.age),
+              status: 'Stable',
+              todayBlendName: form.todayRecommendedTea || '',
+              todayBlendId: '',
+              todayFocus: '',
+              note: '',
+              facilityId: '',
+              lastCheckTime: new Date().toISOString().slice(0, 16).replace('T', ' '),
+            });
+            refetch();
+            setIsAddModalOpen(false);
+          } catch (err) {
+            console.error('[AddMember] Firestore write failed:', err);
+          }
+        }}
+      />
+
     </div>
   );
 }

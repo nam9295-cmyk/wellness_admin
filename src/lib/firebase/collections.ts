@@ -1,30 +1,25 @@
 /**
  * Firestore collection name mapping constants.
  *
- * Firestore uses NEW terminology (blends, conditionNotes, etc.)
+ * Firestore uses actual collection names from Firebase Console
  * while code identifiers keep OLD names (tea*, careNote*, etc.).
  * This mapping bridges the two layers.
  *
  * Usage:
- *   collection(db, COLLECTIONS.blends)          // → 'blends'
- *   collection(db, COLLECTIONS.conditionNotes)   // → 'conditionNotes'
+ *   collection(db, COLLECTIONS.blends)                    // → 'teas' (Firestore 실제 이름)
+ *   collection(db, SUBCOLLECTIONS.conditionNotes('m-1'))   // → 'members/m-1/conditionNotes'
  *
  * Subcollection helpers use template functions:
  *   SUBCOLLECTIONS.dailySummaries('member-id')   // → 'members/member-id/dailySummaries'
+ *   SUBCOLLECTIONS.conditionNotes('member-id')   // → 'members/member-id/conditionNotes'
  *   SUBCOLLECTIONS.parentLinks('member-id')      // → 'members/member-id/parentLinks'
  *   SUBCOLLECTIONS.privateInfo('member-id')      // → 'members/member-id/private'
  */
 
 /** Top-level Firestore collection names */
 export const COLLECTIONS = {
-  /** Blend catalog (code: tea*) */
-  blends: 'blends',
-
-  /** Condition notes — parent-visible (code: careNote*) */
-  conditionNotes: 'conditionNotes',
-
-  /** Condition notes — admin-only (code: careNote* internal) */
-  conditionNotesPrivate: 'conditionNotesPrivate',
+  /** Blend catalog — Firestore 실제 컬렉션명: 'teas' (UI 표기: 블렌드, code: tea*) */
+  blends: 'teas',
 
   /** Members (no rename needed) */
   members: 'members',
@@ -41,6 +36,14 @@ export const SUBCOLLECTIONS = {
   /** members/{memberId}/dailySummaries */
   dailySummaries: (memberId: string) =>
     `${COLLECTIONS.members}/${memberId}/dailySummaries`,
+
+  /** members/{memberId}/conditionNotes — parent-visible (code: careNote*) */
+  conditionNotes: (memberId: string) =>
+    `${COLLECTIONS.members}/${memberId}/conditionNotes`,
+
+  /** members/{memberId}/conditionNotesPrivate — admin-only (code: careNote* internal) */
+  conditionNotesPrivate: (memberId: string) =>
+    `${COLLECTIONS.members}/${memberId}/conditionNotesPrivate`,
 
   /** members/{memberId}/parentLinks */
   parentLinks: (memberId: string) =>

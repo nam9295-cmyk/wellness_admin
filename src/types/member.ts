@@ -65,6 +65,7 @@ export type Member = {
   status: MemberStatus;
   lastCheckTime: string;
   todayRecommendedTea: string;
+  todayTeaId?: string;
   todayFocus: string;
   note: string;
   carePoint: string;
