@@ -1,7 +1,7 @@
 import { Link, useParams } from 'react-router-dom';
 import { PageSection } from '../components/common/PageSection';
 import { StatusBadge } from '../components/common/StatusBadge';
-import { members } from '../data/mockData';
+import { careNotes, members } from '../data/mockData';
 
 export function MemberDetailPage() {
   const { memberId } = useParams();
@@ -63,49 +63,6 @@ export function MemberDetailPage() {
         </div>
       </section>
 
-      {/* 최근 7일 요약 + 보호자 연결 정보 */}
-      <div className="grid gap-6 xl:grid-cols-[1.2fr_0.8fr]">
-        <PageSection title="최근 7일 흐름" description="주간 상태 변화를 한눈에 확인할 수 있습니다">
-          <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-1">
-            {member.weeklyStatus.map((item) => (
-              <div key={item.day} className="flex items-center justify-between rounded-2xl border border-slate-200 p-4">
-                <div>
-                  <p className="font-semibold text-slate-900">{item.day}</p>
-                  <p className="mt-1 text-sm text-slate-500">{item.summary}</p>
-                </div>
-                <StatusBadge status={item.status} />
-              </div>
-            ))}
-          </div>
-        </PageSection>
-
-        <PageSection title="보호자 연결 정보" description="보호자 홈과 연동되는 공유 상태입니다">
-          <div className="space-y-3 text-sm text-slate-600">
-            <div className="rounded-2xl bg-slate-100 p-4">
-              연결 상태:{' '}
-              <span className="font-semibold text-slate-900">
-                {member.parentConnection.connected ? '연결됨' : '연결 필요'}
-              </span>
-            </div>
-            <div className="rounded-2xl bg-slate-100 p-4">
-              보호자:{' '}
-              <span className="font-semibold text-slate-900">
-                {member.parentConnection.guardianName ?? member.parentConnection.relationship}
-              </span>
-            </div>
-            <div className="rounded-2xl bg-slate-100 p-4">
-              최근 공유: <span className="font-semibold text-slate-900">{member.parentConnection.lastSharedAt}</span>
-            </div>
-            <div className="rounded-2xl bg-slate-900 p-4 text-white">
-              공유 채널: <span className="font-semibold">{member.parentConnection.channel}</span>
-            </div>
-            <div className="rounded-2xl bg-teal-50 p-4 text-teal-900">
-              전달 예정 메모: <span className="font-semibold">{member.parentConnection.nextShareNote}</span>
-            </div>
-          </div>
-        </PageSection>
-      </div>
-
       {/* 수면 / 기분 / 피로 / 집중 흐름 카드 */}
       <PageSection title="웰니스 흐름" description="수면 · 기분 · 피로 · 집중 — 오늘 기준">
         <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
@@ -115,6 +72,21 @@ export function MemberDetailPage() {
               <p className="mt-3 text-2xl font-semibold text-slate-900">{metric.value}</p>
               <p className="mt-2 text-sm font-medium text-teal-700">{metric.trend}</p>
               <p className="mt-3 text-sm text-slate-500">{metric.note}</p>
+            </div>
+          ))}
+        </div>
+      </PageSection>
+
+      {/* 최근 7일 흐름 — 풀 와이드 */}
+      <PageSection title="최근 7일 흐름" description="주간 상태 변화를 한눈에 확인할 수 있습니다">
+        <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
+          {member.weeklyStatus.map((item) => (
+            <div key={item.day} className="flex items-center justify-between rounded-2xl border border-slate-200 p-4">
+              <div>
+                <p className="font-semibold text-slate-900">{item.day}</p>
+                <p className="mt-1 text-sm text-slate-500">{item.summary}</p>
+              </div>
+              <StatusBadge status={item.status} />
             </div>
           ))}
         </div>
@@ -155,18 +127,50 @@ export function MemberDetailPage() {
         </PageSection>
       </div>
 
-      {/* 케어 포인트 / 관리자 메모 */}
-      <PageSection title="케어 포인트" description="다음 케어 액션으로 이어지는 영역입니다">
-        <div className="space-y-4">
-          <div className="rounded-2xl bg-amber-50 p-4 text-sm text-amber-900">{member.carePoint}</div>
-          <div className="rounded-2xl border border-dashed border-slate-300 bg-slate-50 p-5 text-sm text-slate-600">
-            {member.note}
-          </div>
-          <div className="grid gap-3 md:grid-cols-3">
-            <div className="rounded-2xl bg-emerald-50 p-4 text-sm text-emerald-800">건강 체크 기록</div>
-            <div className="rounded-2xl bg-sky-50 p-4 text-sm text-sky-800">보호자 브리핑 작성</div>
-            <div className="rounded-2xl bg-slate-100 p-4 text-sm text-slate-700">메모 추가</div>
-          </div>
+      {/* 케어 노트 (visibility 표시) */}
+      <PageSection title="케어 노트" description="이 회원에 대한 케어 기록입니다. 공개 범위가 표시됩니다">
+        <div className="space-y-3">
+          {careNotes
+            .filter((n) => n.memberId === member.id)
+            .map((note) => (
+              <div
+                key={note.id}
+                className={`rounded-2xl p-4 text-sm ${
+                  note.visibility === 'admin_only'
+                    ? 'border border-dashed border-slate-300 bg-slate-50 text-slate-600'
+                    : 'bg-teal-50 text-teal-900'
+                }`}
+              >
+                <div className="mb-2 flex items-center gap-2">
+                  <span
+                    className={`rounded-full px-2.5 py-0.5 text-xs font-semibold ${
+                      note.visibility === 'admin_only'
+                        ? 'bg-slate-200 text-slate-600'
+                        : 'bg-teal-200 text-teal-800'
+                    }`}
+                  >
+                    {note.visibility === 'admin_only' ? '내부 전용' : '보호자 공개'}
+                  </span>
+                  <span className="text-xs text-slate-400">{note.createdAt}</span>
+                </div>
+                <p>{note.content}</p>
+              </div>
+            ))}
+          {careNotes.filter((n) => n.memberId === member.id).length === 0 ? (
+            <p className="text-sm text-slate-500">등록된 케어 노트가 없습니다.</p>
+          ) : null}
+        </div>
+
+        {/* 관리자 내부 메모 */}
+        <div className="mt-5 rounded-2xl border border-dashed border-slate-300 bg-slate-50 p-5 text-sm text-slate-600">
+          <p className="mb-2 text-xs font-semibold text-slate-400">관리자 내부 메모</p>
+          {member.note}
+        </div>
+
+        <div className="mt-4 grid gap-3 md:grid-cols-3">
+          <div className="rounded-2xl bg-emerald-50 p-4 text-sm text-emerald-800">건강 체크 기록</div>
+          <div className="rounded-2xl bg-sky-50 p-4 text-sm text-sky-800">보호자 브리핑 작성</div>
+          <div className="rounded-2xl bg-slate-100 p-4 text-sm text-slate-700">메모 추가</div>
         </div>
       </PageSection>
     </div>

@@ -1,3 +1,4 @@
+import { Link } from 'react-router-dom';
 import { PageSection } from '../components/common/PageSection';
 import { StatusBadge } from '../components/common/StatusBadge';
 import { members, summaryCards } from '../data/mockData';
@@ -19,7 +20,7 @@ export function DashboardPage() {
         <PageSection title="오늘 회원 현황" description="체크인 기준, 주요 회원의 현재 상태입니다">
           <div className="space-y-3">
             {members.map((member) => (
-              <div key={member.id} className="flex flex-col gap-3 rounded-2xl border border-slate-200 p-4 sm:flex-row sm:items-center sm:justify-between">
+              <Link key={member.id} to={`/members/${member.id}`} className="group flex flex-col gap-3 rounded-2xl border border-slate-200 p-4 transition-colors hover:bg-teal-50/60 sm:flex-row sm:items-center sm:justify-between">
                 <div>
                   <p className="font-semibold text-slate-900">{member.name}</p>
                   <p className="text-sm text-slate-500">
@@ -29,8 +30,9 @@ export function DashboardPage() {
                 <div className="flex items-center gap-3">
                   <StatusBadge status={member.status} />
                   <span className="text-sm text-slate-500">{member.lastCheckTime}</span>
+                  <span className="text-slate-400 transition-transform group-hover:translate-x-0.5 group-hover:text-teal-600">→</span>
                 </div>
-              </div>
+              </Link>
             ))}
           </div>
         </PageSection>

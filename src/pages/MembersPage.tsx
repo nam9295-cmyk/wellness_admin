@@ -1,6 +1,5 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { PageSection } from '../components/common/PageSection';
 import { StatusBadge } from '../components/common/StatusBadge';
 import { members } from '../data/mockData';
 
@@ -47,78 +46,59 @@ export function MembersPage() {
         </div>
       </section>
 
-      <PageSection title="회원 목록" description="검색과 필터로 회원을 빠르게 찾을 수 있습니다">
-        <div className="grid gap-4 lg:grid-cols-[1.5fr_1fr_1fr]">
-          <div className="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3">
-            <label className="text-xs font-semibold uppercase tracking-[0.2em] text-slate-500" htmlFor="member-search">
-              검색
-            </label>
-            <input
-              id="member-search"
-              value={searchKeyword}
-              onChange={(event) => setSearchKeyword(event.target.value)}
-              className="mt-3 w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-teal-500"
-              placeholder="이름, 그룹, 보호자 이름으로 검색"
-            />
-          </div>
-          <div className="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3">
-            <label className="text-xs font-semibold uppercase tracking-[0.2em] text-slate-500" htmlFor="group-filter">
-              그룹
-            </label>
-            <select
-              id="group-filter"
-              value={groupFilter}
-              onChange={(event) => setGroupFilter(event.target.value)}
-              className="mt-3 w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-teal-500"
-            >
-              <option value="all">전체 그룹</option>
-              {groups.map((group) => (
-                <option key={group} value={group}>
-                  {group}
-                </option>
-              ))}
-            </select>
-          </div>
-          <div className="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3">
-            <label className="text-xs font-semibold uppercase tracking-[0.2em] text-slate-500" htmlFor="status-filter">
-              상태
-            </label>
-            <select
-              id="status-filter"
-              value={statusFilter}
-              onChange={(event) => setStatusFilter(event.target.value as 'all' | 'Stable' | 'Attention' | 'Check')}
-              className="mt-3 w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-teal-500"
-            >
-              <option value="all">전체 상태</option>
-              <option value="Stable">Stable</option>
-              <option value="Attention">Attention</option>
-              <option value="Check">Check</option>
-            </select>
-          </div>
-        </div>
-      </PageSection>
-
-      <PageSection title="회원 리스트" description="회원을 선택하면 상세 화면으로 이동합니다">
-        <div className="mb-4 flex items-center justify-between rounded-2xl bg-slate-50 px-4 py-3 text-sm text-slate-500">
-          <span>{filteredMembers.length}명 표시 중</span>
+      {/* 검색/필터 + 테이블 통합 */}
+      <section className="rounded-3xl border border-slate-200 bg-white shadow-sm">
+        <div className="flex flex-col gap-3 border-b border-slate-200 px-5 py-4 sm:flex-row sm:items-center sm:gap-4">
+          <input
+            id="member-search"
+            value={searchKeyword}
+            onChange={(event) => setSearchKeyword(event.target.value)}
+            className="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-2.5 text-sm text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-teal-500 sm:max-w-xs"
+            placeholder="이름, 그룹, 보호자 검색"
+          />
+          <select
+            id="group-filter"
+            value={groupFilter}
+            onChange={(event) => setGroupFilter(event.target.value)}
+            className="rounded-xl border border-slate-200 bg-slate-50 px-4 py-2.5 text-sm text-slate-900 outline-none transition focus:border-teal-500"
+          >
+            <option value="all">전체 그룹</option>
+            {groups.map((group) => (
+              <option key={group} value={group}>
+                {group}
+              </option>
+            ))}
+          </select>
+          <select
+            id="status-filter"
+            value={statusFilter}
+            onChange={(event) => setStatusFilter(event.target.value as 'all' | 'Stable' | 'Attention' | 'Check')}
+            className="rounded-xl border border-slate-200 bg-slate-50 px-4 py-2.5 text-sm text-slate-900 outline-none transition focus:border-teal-500"
+          >
+            <option value="all">전체 상태</option>
+            <option value="Stable">Stable</option>
+            <option value="Attention">Attention</option>
+            <option value="Check">Check</option>
+          </select>
+          <span className="ml-auto text-sm text-slate-500">{filteredMembers.length}명</span>
         </div>
 
-        <div className="overflow-x-auto rounded-2xl border border-slate-200">
-          <div className="grid min-w-[980px] grid-cols-[1.1fr_0.9fr_0.8fr_1fr_0.8fr_0.9fr_0.9fr] gap-4 bg-slate-50 px-5 py-3 text-sm font-semibold text-slate-600">
+        <div className="overflow-x-auto">
+          <div className="grid min-w-[880px] grid-cols-[1.2fr_0.9fr_0.8fr_1fr_0.8fr_0.9fr_40px] gap-4 bg-slate-50 px-5 py-3 text-sm font-semibold text-slate-600">
             <span>이름</span>
             <span>그룹</span>
             <span>보호자</span>
             <span>최근 체크</span>
             <span>상태</span>
             <span>오늘의 티</span>
-            <span>오늘 포커스</span>
+            <span />
           </div>
 
           {filteredMembers.map((member) => (
             <Link
               key={member.id}
               to={`/members/${member.id}`}
-              className="grid min-w-[980px] grid-cols-[1.1fr_0.9fr_0.8fr_1fr_0.8fr_0.9fr_0.9fr] items-center gap-4 border-t border-slate-200 px-5 py-4 text-sm text-slate-700 transition hover:bg-teal-50/40"
+              className="group grid min-w-[880px] grid-cols-[1.2fr_0.9fr_0.8fr_1fr_0.8fr_0.9fr_40px] items-center gap-4 border-t border-slate-200 px-5 py-4 text-sm text-slate-700 transition-colors hover:bg-teal-50/60"
             >
               <div>
                 <p className="font-semibold text-slate-900">{member.name}</p>
@@ -134,7 +114,7 @@ export function MembersPage() {
                 <StatusBadge status={member.status} />
               </div>
               <span className="rounded-lg bg-teal-50 px-2 py-0.5 font-medium text-teal-800">{member.todayRecommendedTea}</span>
-              <span>{member.todayFocus}</span>
+              <span className="text-slate-400 transition-transform group-hover:translate-x-0.5 group-hover:text-teal-600">→</span>
             </Link>
           ))}
 
@@ -142,7 +122,7 @@ export function MembersPage() {
             <div className="px-5 py-10 text-center text-sm text-slate-500">조건에 맞는 회원이 없습니다. 검색어나 필터를 조정해 보세요.</div>
           ) : null}
         </div>
-      </PageSection>
+      </section>
     </div>
   );
 }

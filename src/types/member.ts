@@ -1,8 +1,13 @@
 export type MemberStatus = 'Stable' | 'Attention' | 'Check';
 
+export type UserRole = 'admin' | 'parent';
+
+export type NoteVisibility = 'admin_only' | 'parent_visible' | 'member_visible';
+
 export type WellnessMetric = {
   label: '수면' | '기분' | '피로' | '집중';
   value: string;
+  summaryLabel: string;
   trend: string;
   note: string;
 };
@@ -11,6 +16,7 @@ export type DailyStatus = {
   day: string;
   status: MemberStatus;
   summary: string;
+  parentSummary: string;
 };
 
 export type SavedTea = {
@@ -26,6 +32,28 @@ export type ParentConnection = {
   lastSharedAt: string;
   channel: string;
   nextShareNote: string;
+};
+
+export type CareNote = {
+  id: string;
+  memberId: string;
+  authorId: string;
+  content: string;
+  visibility: NoteVisibility;
+  category: 'care_point' | 'internal_memo' | 'parent_briefing';
+  createdAt: string;
+};
+
+export type ParentChildLink = {
+  id: string;
+  parentUserId: string;
+  childMemberId: string;
+  relationship: string;
+  linkedAt: string;
+  status: 'active' | 'pending' | 'revoked';
+  visibilityLevel: 'summary' | 'detailed';
+  notificationChannel: 'app' | 'kakao' | 'sms';
+  approvedBy: string;
 };
 
 export type Member = {

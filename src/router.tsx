@@ -1,4 +1,5 @@
 import { createBrowserRouter } from 'react-router-dom';
+import { RequireRole } from './components/common/RequireRole';
 import { AppLayout } from './layouts/AppLayout';
 import { DashboardPage } from './pages/DashboardPage';
 import { MemberDetailPage } from './pages/MemberDetailPage';
@@ -11,25 +12,32 @@ export const router = createBrowserRouter([
     path: '/',
     element: <AppLayout />,
     children: [
+      // Admin-only routes
       {
-        index: true,
-        element: <DashboardPage />,
+        element: <RequireRole roles={['admin']} />,
+        children: [
+          {
+            index: true,
+            element: <DashboardPage />,
+          },
+          {
+            path: 'members',
+            element: <MembersPage />,
+          },
+          {
+            path: 'members/:memberId',
+            element: <MemberDetailPage />,
+          },
+          {
+            path: 'settings',
+            element: <SettingsPage />,
+          },
+        ],
       },
-      {
-        path: 'members',
-        element: <MembersPage />,
-      },
-      {
-        path: 'members/:memberId',
-        element: <MemberDetailPage />,
-      },
+      // Shared routes (admin preview + parent access)
       {
         path: 'parent-mode',
         element: <ParentModePage />,
-      },
-      {
-        path: 'settings',
-        element: <SettingsPage />,
       },
     ],
   },
