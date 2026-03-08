@@ -1,13 +1,39 @@
 import { Link } from 'react-router-dom';
 import { PageSection } from '../components/common/PageSection';
 import { StatusBadge } from '../components/common/StatusBadge';
-import { members, summaryCards } from '../data/mockData';
+import { summaryCards as mockSummaryCards } from '../data/mockData';
+import { useBlends } from '../hooks/useBlends';
+import { useMembers } from '../hooks/useMembers';
 
 export function DashboardPage() {
+  const { members, isFirestore } = useMembers();
+  const { blends, isFirestore: isBlendsFs } = useBlends();
+
+  // ── 대시보드 통계 (Firestore → mockData fallback) ──
+  const totalCount = members.length;
+  const stableCount = members.filter((m) => m.status === 'Stable').length;
+  const attentionCount = members.filter((m) => m.status === 'Attention').length;
+  const checkCount = members.filter((m) => m.status === 'Check').length;
+
+  const todayStr = new Date().toISOString().slice(0, 10);
+  const todayCheckedCount = members.filter((m) =>
+    m.lastCheckTime?.startsWith(todayStr),
+  ).length;
+  const checkinPct = totalCount > 0 ? Math.round((todayCheckedCount / totalCount) * 100) : 0;
+
+  const dashboardCards = isFirestore
+    ? [
+        { label: '전체 회원', value: String(totalCount), change: `Stable ${stableCount}명` },
+        { label: '오늘 체크인', value: String(todayCheckedCount), change: `${checkinPct}% 완료` },
+        { label: '확인 필요', value: String(attentionCount + checkCount), change: `Attention ${attentionCount} · Check ${checkCount}` },
+        { label: '추천 블렌드', value: isBlendsFs ? `${blends.length}종` : '—', change: isBlendsFs ? '블렌드 카탈로그 연결됨' : '연결 준비 중' },
+      ]
+    : mockSummaryCards;
+
   return (
     <div className="space-y-6">
       <section className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
-        {summaryCards.map((card) => (
+        {dashboardCards.map((card) => (
           <div key={card.label} className="rounded-3xl bg-slate-900 p-5 text-white shadow-sm">
             <p className="text-sm text-slate-300">{card.label}</p>
             <p className="mt-3 text-3xl font-semibold">{card.value}</p>
