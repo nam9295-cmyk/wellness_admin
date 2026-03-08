@@ -12,7 +12,7 @@ type NavItem = {
 const navigationItems: NavItem[] = [
   { to: '/', label: '대시보드', end: true, roles: ['admin'] },
   { to: '/members', label: '회원 관리', roles: ['admin'] },
-  { to: '/parent-mode', label: '보호자 홈', roles: ['admin', 'parent'] },
+  { to: '/parent-mode', label: '가족 홈', roles: ['admin', 'parent'] },
   { to: '/settings', label: '설정', roles: ['admin'] },
 ];
 
@@ -26,7 +26,7 @@ export function Sidebar() {
       <div className="border-b border-slate-200 px-6 py-5">
         <p className="text-xs font-semibold uppercase tracking-[0.24em] text-teal-600">Wellness</p>
         <h1 className="mt-2 text-xl font-semibold text-slate-900">
-          {isParent ? '보호자 홈' : '관리자 대시보드'}
+          {isParent ? '가족 홈' : '관리자 대시보드'}
         </h1>
       </div>
 
@@ -50,7 +50,7 @@ export function Sidebar() {
       <div className="border-t border-slate-200 px-4 py-5">
         <div className={`rounded-2xl p-4 text-sm ${isParent ? 'bg-teal-600 text-teal-50' : 'bg-slate-900 text-slate-100'}`}>
           <p className="font-semibold">
-            {isParent ? '보호자 모드로 보고 있어요' : '초기 웹 구조 준비 완료'}
+            {isParent ? '가족 모드로 보고 있어요' : '초기 웹 구조 준비 완료'}
           </p>
           <p className={`mt-1 ${isParent ? 'text-teal-100' : 'text-slate-300'}`}>
             {isParent

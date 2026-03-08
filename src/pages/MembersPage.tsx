@@ -32,12 +32,12 @@ export function MembersPage() {
         <div className="rounded-3xl bg-slate-900 p-5 text-white shadow-sm">
           <p className="text-sm text-slate-300">전체 회원</p>
           <p className="mt-3 text-3xl font-semibold">{members.length}</p>
-          <p className="mt-2 text-sm text-teal-300">현재 케어 대상 기준</p>
+          <p className="mt-2 text-sm text-teal-300">현재 컨디션 관리 대상 기준</p>
         </div>
         <div className="rounded-3xl bg-white p-5 shadow-sm ring-1 ring-slate-200">
-          <p className="text-sm text-slate-500">보호자 연결</p>
+          <p className="text-sm text-slate-500">가족 연결</p>
           <p className="mt-3 text-3xl font-semibold text-slate-900">{connectedCount}</p>
-          <p className="mt-2 text-sm text-slate-500">보호자 홈 연동 가능</p>
+          <p className="mt-2 text-sm text-slate-500">가족 홈 연동 가능</p>
         </div>
         <div className="rounded-3xl bg-white p-5 shadow-sm ring-1 ring-slate-200">
           <p className="text-sm text-slate-500">확인 필요</p>
@@ -54,7 +54,7 @@ export function MembersPage() {
             value={searchKeyword}
             onChange={(event) => setSearchKeyword(event.target.value)}
             className="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-2.5 text-sm text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-teal-500 sm:max-w-xs"
-            placeholder="이름, 그룹, 보호자 검색"
+            placeholder="이름, 그룹, 가족 검색"
           />
           <select
             id="group-filter"
@@ -87,10 +87,10 @@ export function MembersPage() {
           <div className="grid min-w-[880px] grid-cols-[1.2fr_0.9fr_0.8fr_1fr_0.8fr_0.9fr_40px] gap-4 bg-slate-50 px-5 py-3 text-sm font-semibold text-slate-600">
             <span>이름</span>
             <span>그룹</span>
-            <span>보호자</span>
+            <span>가족</span>
             <span>최근 체크</span>
             <span>상태</span>
-            <span>오늘의 티</span>
+            <span>오늘의 블렌드</span>
             <span />
           </div>
 

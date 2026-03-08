@@ -4,7 +4,7 @@ export const summaryCards = [
   { label: '전체 회원', value: '128', change: '이번 주 +4명' },
   { label: '오늘 체크인', value: '94', change: '73% 완료' },
   { label: '확인 필요', value: '8', change: '새 알림 2건' },
-  { label: '보호자 문의', value: '13', change: '미확인 5건' },
+  { label: '가족 문의', value: '13', change: '미확인 5건' },
 ];
 
 export const members: Member[] = [
@@ -16,7 +16,7 @@ export const members: Member[] = [
     group: '해바라기반',
     status: 'Stable',
     lastCheckTime: '2026-03-07 09:20',
-    todayRecommendedTea: '캐모마일 티',
+    todayRecommendedTea: '캐모마일 블렌드',
     todayFocus: '점심 이후 수분 섭취 체크',
     note: '아침 식사 및 복약 완료. 오전 스트레칭 참여율이 높고 대화 반응도 안정적입니다.',
     carePoint: '점심 이후 수분 섭취를 한 번 더 체크하면 좋습니다.',
@@ -35,9 +35,9 @@ export const members: Member[] = [
       { label: '집중', value: '보통', summaryLabel: '보통이에요', trend: '안정', note: '그룹 활동 참여 무난' },
     ],
     savedTeas: [
-      { name: '캐모마일 티', reason: '수면 안정에 도움, 저녁 루틴으로 적합', savedAt: '2026-03-05' },
-      { name: '레몬그라스 티', reason: '소화 촉진, 식후 가볍게 한 잔', savedAt: '2026-03-03' },
-      { name: '페퍼민트 티', reason: '기분 전환, 오후 산책 전 추천', savedAt: '2026-02-28' },
+      { name: '캐모마일 블렌드', reason: '수면 안정에 도움, 저녁 루틴으로 적합', savedAt: '2026-03-05' },
+      { name: '레모그라스 블렌드', reason: '소화 촉진, 식후 가볍게 한 잔', savedAt: '2026-03-03' },
+      { name: '페퍼민트 블렌드', reason: '기분 전환, 오후 산책 전 추천', savedAt: '2026-02-28' },
     ],
     weeklyStatus: [
       { day: '03.01', status: 'Stable', summary: '식사, 수면 모두 안정적', parentSummary: '식사도 수면도 편안한 하루였어요' },
@@ -57,17 +57,17 @@ export const members: Member[] = [
     group: '은하수반',
     status: 'Attention',
     lastCheckTime: '2026-03-07 08:40',
-    todayRecommendedTea: '루이보스 티',
+    todayRecommendedTea: '루이보스 블렌드',
     todayFocus: '점심 전 혈압 재측정',
     note: '아침 측정에서 혈압 편차가 있어 재측정 예정입니다. 오전 활동은 가볍게 조정했습니다.',
-    carePoint: '점심 전 혈압 재측정 후 보호자에게 짧은 브리핑 전송 권장.',
+    carePoint: '점심 전 혈압 재측정 후 가족에게 짧은 브리핑 전송 권장.',
     parentConnection: {
       guardianName: '박수연',
       relationship: '딸',
       connected: true,
       lastSharedAt: '2026-03-06 18:20',
       channel: '카카오 알림',
-      nextShareNote: '혈압 재측정 결과와 오전 활동 조정 사항을 보호자에게 공유 예정',
+      nextShareNote: '혈압 재측정 결과와 오전 활동 조정 사항을 가족에게 공유 예정',
     },
     metrics: [
       { label: '수면', value: '5.8시간', summaryLabel: '조금 부족해요', trend: '하락', note: '야간 중간 각성 2회' },
@@ -76,8 +76,8 @@ export const members: Member[] = [
       { label: '집중', value: '낮음', summaryLabel: '조금 어려워요', trend: '하락', note: '활동 집중도 저하' },
     ],
     savedTeas: [
-      { name: '루이보스 티', reason: '카페인 없이 항산화, 혈압 안정 보조', savedAt: '2026-03-06' },
-      { name: '히비스커스 티', reason: '혈압 관리 보조, 산뜻한 맛', savedAt: '2026-03-04' },
+      { name: '루이보스 블렌드', reason: '카페인 없이 항산화, 혈압 안정 보조', savedAt: '2026-03-06' },
+      { name: '히비스커스 블렌드', reason: '혈압 관리 보조, 산뜻한 맛', savedAt: '2026-03-04' },
     ],
     weeklyStatus: [
       { day: '03.01', status: 'Stable', summary: '평균 컨디션 유지', parentSummary: '무난하고 편안한 하루였어요' },
@@ -97,7 +97,7 @@ export const members: Member[] = [
     group: '푸른반',
     status: 'Check',
     lastCheckTime: '2026-03-07 10:05',
-    todayRecommendedTea: '레몬밤 티',
+    todayRecommendedTea: '레모밤 블렌드',
     todayFocus: '물리치료 후 피로도 재체크',
     note: '물리치료 일정 전후 컨디션 기록을 확인 중입니다. 피로도 변동을 지켜보는 중입니다.',
     carePoint: '오후 치료 후 기분/피로 재체크가 필요합니다.',
@@ -107,7 +107,7 @@ export const members: Member[] = [
       connected: true,
       lastSharedAt: '2026-03-07 09:00',
       channel: '앱 알림',
-      nextShareNote: '치료 전후 컨디션 변화와 오늘 추천 티 정보를 함께 전달 예정',
+      nextShareNote: '치료 전후 컨디션 변화와 오늘 추천 블렌드 정보를 함께 전달 예정',
     },
     metrics: [
       { label: '수면', value: '6.7시간', summaryLabel: '보통이에요', trend: '유지', note: '수면 패턴은 보통' },
@@ -116,9 +116,9 @@ export const members: Member[] = [
       { label: '집중', value: '좋음', summaryLabel: '좋아요', trend: '유지', note: '상담 반응 양호' },
     ],
     savedTeas: [
-      { name: '레몬밤 티', reason: '긴장 완화, 치료 전후 안정감', savedAt: '2026-03-06' },
-      { name: '페퍼민트 티', reason: '상쾌한 기분 전환, 피로 회복', savedAt: '2026-03-02' },
-      { name: '캐모마일 티', reason: '저녁 수면 루틴용', savedAt: '2026-02-27' },
+      { name: '레모밤 블렌드', reason: '긴장 완화, 치료 전후 안정감', savedAt: '2026-03-06' },
+      { name: '페퍼민트 블렌드', reason: '상쾌한 기분 전환, 피로 회복', savedAt: '2026-03-02' },
+      { name: '캐모마일 블렌드', reason: '저녁 수면 루틴용', savedAt: '2026-02-27' },
     ],
     weeklyStatus: [
       { day: '03.01', status: 'Stable', summary: '주말 컨디션 양호', parentSummary: '주말 동안 편안하게 지내셨어요' },
@@ -144,11 +144,11 @@ export const members: Member[] = [
     carePoint: '산책 후 피로도와 수분 섭취 체크 정도만 유지하면 됩니다.',
     parentConnection: {
       guardianName: null,
-      relationship: '보호자 미연결',
+      relationship: '가족 미연결',
       connected: false,
       lastSharedAt: '연결 필요',
       channel: '미설정',
-      nextShareNote: '보호자 연결이 완료되면 활동 요약과 생활 패턴을 공유할 수 있습니다.',
+      nextShareNote: '가족 연결이 완료되면 활동 요약과 생활 패턴을 공유할 수 있습니다.',
     },
     metrics: [
       { label: '수면', value: '7.0시간', summaryLabel: '충분해요', trend: '유지', note: '무난한 수면' },
@@ -184,7 +184,7 @@ export const parentChildViews: ParentChildView[] = [
     sleepHours: '7.5시간',
     fatigue: '낮음',
     focus: '보통',
-    todayTea: '캐모마일 티',
+    todayTea: '캐모마일 블렌드',
     carePoints: [
       '오늘 오전 스트레칭에 잘 참여했어요.',
       '점심 이후 수분 섭취를 한 번 더 챙겨드리면 좋겠어요.',
@@ -214,7 +214,7 @@ export const parentChildViews: ParentChildView[] = [
     sleepHours: '5.8시간',
     fatigue: '높음',
     focus: '낮음',
-    todayTea: '루이보스 티',
+    todayTea: '루이보스 블렌드',
     carePoints: [
       '오늘 아침 혈압에 약간 변동이 있어 점심 전에 다시 체크할 예정이에요.',
       '오전 활동은 가볍게 조정해서 진행하고 있어요.',
@@ -266,7 +266,7 @@ export const careNotes: CareNote[] = [
     id: 'cn-004',
     memberId: 'm-002',
     authorId: 'admin-001',
-    content: '점심 전 혈압 재측정 후 보호자에게 짧은 브리핑 전송 권장.',
+    content: '점심 전 혈압 재측정 후 가족에게 짧은 브리핑 전송 권장.',
     visibility: 'admin_only',
     category: 'internal_memo',
     createdAt: '2026-03-07 08:50',
@@ -294,7 +294,7 @@ export const careNotes: CareNote[] = [
 export const parentUpdates = [
   {
     title: '오늘 건강 브리핑',
-    description: '보호자에게 전달할 일일 활동/식사/복약 요약 템플릿',
+    description: '가족에게 전달할 일일 활동/식사/복약 요약 템플릿',
   },
   {
     title: '면회 요청 관리',
@@ -313,10 +313,10 @@ export const settingsGroups = [
   },
   {
     title: '알림 설정',
-    items: ['이상 징후 알림', '보호자 알림 채널', '리마인더 빈도'],
+    items: ['이상 징후 알림', '가족 알림 채널', '리마인더 빈도'],
   },
   {
     title: '접근 권한',
-    items: ['관리자 권한', '보호자 열람 범위', '활동 기록'],
+    items: ['관리자 권한', '가족 열람 범위', '활동 기록'],
   },
 ];

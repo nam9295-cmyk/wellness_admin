@@ -6,7 +6,7 @@ import { useAuth } from '../contexts/AuthContext';
 const adminPageTitles: Record<string, string> = {
   '/': '대시보드',
   '/members': '회원 관리',
-  '/parent-mode': '보호자 홈',
+  '/parent-mode': '가족 홈',
   '/settings': '설정',
 };
 

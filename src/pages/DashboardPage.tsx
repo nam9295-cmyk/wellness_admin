@@ -24,7 +24,7 @@ export function DashboardPage() {
                 <div>
                   <p className="font-semibold text-slate-900">{member.name}</p>
                   <p className="text-sm text-slate-500">
-                    {member.group} · {member.room} · 보호자 {member.parentConnection.guardianName ?? '미연결'}
+                    {member.group} · {member.room} · 가족 {member.parentConnection.guardianName ?? '미연결'}
                   </p>
                 </div>
                 <div className="flex items-center gap-3">
@@ -41,7 +41,7 @@ export function DashboardPage() {
           <div className="space-y-3 text-sm text-slate-600">
             <div className="rounded-2xl bg-teal-50 p-4">오전 체크인 미완료 회원 4명, 확인이 필요합니다</div>
             <div className="rounded-2xl bg-amber-50 p-4">혈압 재측정 대상 2명, 오후 라운딩에 포함 예정</div>
-            <div className="rounded-2xl bg-slate-100 p-4">보호자 문의 5건 미확인, 보호자 홈에서 응대 가능</div>
+            <div className="rounded-2xl bg-slate-100 p-4">가족 문의 5건 미확인, 가족 홈에서 응대 가능</div>
           </div>
         </PageSection>
       </div>
