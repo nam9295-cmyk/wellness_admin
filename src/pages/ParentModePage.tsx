@@ -1,7 +1,10 @@
 import { useState } from 'react';
 import { ParentStatusLabel } from '../components/common/ParentStatusLabel';
-import { careNotes, parentChildViews } from '../data/mockData';
-import type { MemberStatus } from '../types/member';
+import { parentChildViews as mockParentViews } from '../data/mockData';
+import type { MemberStatus, ParentChildView } from '../types/member';
+import { useConditionNotes } from '../hooks/useConditionNotes';
+import { useDailySummaries } from '../hooks/useDailySummaries';
+import { useMembers } from '../hooks/useMembers';
 
 const trendDotColor: Record<MemberStatus, string> = {
   Stable: 'bg-emerald-400',
@@ -16,8 +19,36 @@ const heroOneLiner: Record<MemberStatus, string> = {
 };
 
 export function ParentModePage() {
-  const [selectedChildId, setSelectedChildId] = useState(parentChildViews[0]?.childId ?? '');
-  const child = parentChildViews.find((c) => c.childId === selectedChildId) ?? parentChildViews[0];
+  const { members } = useMembers();
+  const [selectedChildId, setSelectedChildId] = useState('');
+
+  // Member → ParentChildView 변환 (mockParentViews 보강)
+  const childList: ParentChildView[] = members.map((m) => {
+    const mock = mockParentViews.find((p) => p.childId === m.id);
+    return {
+      childId: m.id,
+      childName: m.name,
+      group: m.group,
+      status: m.status,
+      lastCheckTime: m.lastCheckTime,
+      todayChecked: mock?.todayChecked ?? false,
+      todayMood: mock?.todayMood ?? '',
+      sleepHours: mock?.sleepHours ?? '',
+      fatigue: mock?.fatigue ?? '',
+      focus: mock?.focus ?? '',
+      todayTea: m.todayRecommendedTea || mock?.todayTea || '',
+      carePoints: mock?.carePoints ?? [],
+      recentTrend: mock?.recentTrend ?? [],
+      encouragements: mock?.encouragements ?? [],
+      rewardCount: mock?.rewardCount ?? 0,
+    };
+  });
+
+  const child = childList.find((c) => c.childId === selectedChildId) ?? childList[0];
+
+  // Firestore hooks (선택된 회원의 실시간 데이터)
+  const { today, summaries, isFirestore: isSummaryFs } = useDailySummaries(child?.childId);
+  const { notes: allConditionNotes } = useConditionNotes(child?.childId);
 
   if (!child) {
     return (
@@ -28,16 +59,34 @@ export function ParentModePage() {
     );
   }
 
-  const visibleNotes = careNotes.filter(
-    (n) => n.memberId === child.childId && n.visibility === 'parent_visible',
-  );
+  // ── Firestore → mockData fallback (가족 뷰 기준) ──
+  const visibleNotes = allConditionNotes.filter((n) => n.visibility === 'parent_visible');
+
+  // 오늘 컨디션 (dailySummary 우선, 없으면 mockData)
+  const todayChecked = isSummaryFs && today ? true : child.todayChecked;
+  const status = isSummaryFs && today ? today.status : child.status;
+  const todayMood = (isSummaryFs && today?.mood) || child.todayMood;
+  const sleepHours = (isSummaryFs && today?.sleep) || child.sleepHours;
+  const fatigue = (isSummaryFs && today?.fatigue) || child.fatigue;
+  const focus = (isSummaryFs && today?.focus) || child.focus;
+  const todayTea = (isSummaryFs && today?.blendName) || child.todayTea;
+
+  // 최근 흐름 (dailySummaries → mockData fallback)
+  const recentTrend = isSummaryFs && summaries.length > 0
+    ? [...summaries].reverse().map((s) => ({
+        day: s.date.slice(5).replace('-', '.'),
+        status: s.status,
+        summary: s.adminSummary,
+        parentSummary: s.parentSummary,
+      }))
+    : child.recentTrend;
 
   return (
     <div className="mx-auto max-w-3xl space-y-8">
       {/* 자녀 선택 */}
-      {parentChildViews.length > 1 ? (
+      {childList.length > 1 ? (
         <div className="flex items-center gap-3">
-          {parentChildViews.map((c) => (
+          {childList.map((c) => (
             <button
               key={c.childId}
               type="button"
@@ -57,20 +106,20 @@ export function ParentModePage() {
       {/* ── 인사 영역 + 오늘의 한마디 ── */}
       <section className="rounded-3xl bg-gradient-to-br from-teal-500 via-teal-600 to-emerald-700 p-6 text-white shadow-sm sm:p-8">
         <p className="text-sm font-medium text-teal-100">
-          {child.todayChecked ? '오늘 체크인 완료' : '체크인 대기 중'}
+          {todayChecked ? '오늘 체크인 완료' : '체크인 대기 중'}
         </p>
         <h2 className="mt-2 text-3xl font-semibold">{child.childName}님, 오늘도 좋은 하루예요</h2>
         <p className="mt-3 text-sm leading-relaxed text-white/80">
-          {child.todayChecked
+          {todayChecked
             ? '오늘 컨디션 확인이 끝났어요. 아래에서 자세히 살펴보실 수 있어요.'
             : '아직 오늘 체크인 전이에요. 곧 업데이트될 거예요.'}
         </p>
 
         {/* 오늘의 한마디 pill */}
         <div className="mt-5 flex items-center gap-3">
-          <ParentStatusLabel status={child.status} />
+          <ParentStatusLabel status={status} />
           <span className="inline-block rounded-full bg-white/20 px-4 py-1.5 text-sm font-medium text-white backdrop-blur-sm">
-            {heroOneLiner[child.status]}
+            {heroOneLiner[status]}
           </span>
         </div>
       </section>
@@ -83,19 +132,19 @@ export function ParentModePage() {
         <div className="mt-5 grid grid-cols-2 gap-4">
           <div className="rounded-2xl bg-slate-50 p-4">
             <p className="text-xs font-medium text-slate-500">기분</p>
-            <p className="mt-1.5 text-xl font-semibold text-slate-900">{child.todayMood}</p>
+            <p className="mt-1.5 text-xl font-semibold text-slate-900">{todayMood}</p>
           </div>
           <div className="rounded-2xl bg-slate-50 p-4">
             <p className="text-xs font-medium text-slate-500">수면</p>
-            <p className="mt-1.5 text-xl font-semibold text-slate-900">{child.sleepHours}</p>
+            <p className="mt-1.5 text-xl font-semibold text-slate-900">{sleepHours}</p>
           </div>
           <div className="rounded-2xl bg-slate-50 p-4">
             <p className="text-xs font-medium text-slate-500">피로</p>
-            <p className="mt-1.5 text-xl font-semibold text-slate-900">{child.fatigue}</p>
+            <p className="mt-1.5 text-xl font-semibold text-slate-900">{fatigue}</p>
           </div>
           <div className="rounded-2xl bg-slate-50 p-4">
             <p className="text-xs font-medium text-slate-500">집중</p>
-            <p className="mt-1.5 text-xl font-semibold text-slate-900">{child.focus}</p>
+            <p className="mt-1.5 text-xl font-semibold text-slate-900">{focus}</p>
           </div>
         </div>
       </section>
@@ -127,7 +176,7 @@ export function ParentModePage() {
         <div className="mt-4 flex items-center gap-4 rounded-2xl bg-emerald-50/70 px-5 py-4">
           <span className="text-2xl">🍵</span>
           <div>
-            <p className="text-base font-semibold text-emerald-900">{child.todayTea}</p>
+            <p className="text-base font-semibold text-emerald-900">{todayTea}</p>
             <p className="mt-0.5 text-sm text-emerald-700/80">
               오늘 컨디션에 맞춰 선생님이 추천해 드린 블렌드예요
             </p>
@@ -141,7 +190,7 @@ export function ParentModePage() {
         <p className="mt-1 text-sm text-slate-500">생활 리듬을 한눈에 볼 수 있어요</p>
 
         <div className="mt-4 space-y-0.5">
-          {child.recentTrend.map((day) => (
+          {recentTrend.map((day) => (
             <div key={day.day} className="flex items-center gap-3 rounded-xl px-3 py-2 transition hover:bg-slate-50">
               <span className="w-11 shrink-0 text-xs font-semibold text-slate-500">{day.day}</span>
               <span className={`h-2 w-2 shrink-0 rounded-full ${trendDotColor[day.status]}`} />
