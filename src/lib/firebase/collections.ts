@@ -56,6 +56,10 @@ export const SUBCOLLECTIONS = {
   /** members/{memberId}/encouragementMessages */
   encouragementMessages: (memberId: string) =>
     `${COLLECTIONS.members}/${memberId}/encouragementMessages`,
+
+  /** members/{memberId}/savedTeas */
+  savedTeas: (memberId: string) =>
+    `${COLLECTIONS.members}/${memberId}/savedTeas`,
 } as const;
 
 export type CollectionName = (typeof COLLECTIONS)[keyof typeof COLLECTIONS];

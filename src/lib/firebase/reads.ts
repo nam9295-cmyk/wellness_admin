@@ -85,6 +85,26 @@ export interface ConditionNoteDoc {
   createdAt: string;
 }
 
+/** Firestore: members/{memberId}/savedTeas/{teaId} */
+export interface SavedTeaDoc {
+  id: string;
+  teaId: string;
+  savedAt: string;
+  reason: string;
+}
+
+function toDateText(value: unknown): string {
+  if (typeof value === 'string') return value;
+  if (value instanceof Date) return value.toISOString().slice(0, 16).replace('T', ' ');
+  if (value && typeof value === 'object' && 'toDate' in value && typeof value.toDate === 'function') {
+    const date = value.toDate();
+    return date instanceof Date && !Number.isNaN(date.getTime())
+      ? date.toISOString().slice(0, 16).replace('T', ' ')
+      : '';
+  }
+  return '';
+}
+
 // ---------------------------------------------------------------------------
 // Read helpers
 // ---------------------------------------------------------------------------
@@ -237,4 +257,42 @@ export async function fetchAllConditionNotesForMember(
   return [...visible, ...priv].sort(
     (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
   );
+}
+
+/**
+ * Fetch saved teas for a member.
+ * Firestore subcollection: 'members/{memberId}/savedTeas'
+ *
+ * Document ID is expected to be the teaId.
+ * Additional fields are optional and normalized defensively.
+ */
+export async function fetchSavedTeas(
+  memberId: string,
+  limitCount = 20,
+): Promise<SavedTeaDoc[]> {
+  const snapshot = await getDocs(collection(db, SUBCOLLECTIONS.savedTeas(memberId)));
+
+  return snapshot.docs
+    .map((d) => {
+      const data = d.data() as Record<string, unknown>;
+      return {
+        id: d.id,
+        teaId: typeof data.teaId === 'string' && data.teaId.length > 0 ? data.teaId : d.id,
+        savedAt: toDateText(data.savedAt ?? data.createdAt ?? data.updatedAt),
+        reason:
+          typeof data.reason === 'string' && data.reason.length > 0
+            ? data.reason
+            : typeof data.note === 'string' && data.note.length > 0
+              ? data.note
+              : typeof data.memo === 'string' && data.memo.length > 0
+                ? data.memo
+                : '앱에서 저장된 블렌드',
+      };
+    })
+    .sort((a, b) => {
+      const aTime = a.savedAt ? new Date(a.savedAt).getTime() : 0;
+      const bTime = b.savedAt ? new Date(b.savedAt).getTime() : 0;
+      return bTime - aTime;
+    })
+    .slice(0, limitCount);
 }

@@ -5,6 +5,7 @@ import { StatusBadge } from '../components/common/StatusBadge';
 import { useConditionNotes } from '../hooks/useConditionNotes';
 import { useBlends } from '../hooks/useBlends';
 import { useMember } from '../hooks/useMembers';
+import { useSavedTeas } from '../hooks/useSavedTeas';
 import type { CareNote } from '../types/member';
 
 export function MemberDetailPage() {
@@ -22,6 +23,7 @@ export function MemberDetailPage() {
   const { member } = useMember(memberId);
 
   const { blends, isFirestore: isBlendsFirestore } = useBlends();
+  const { savedTeas, loading: savedTeasLoading } = useSavedTeas(memberId);
 
   // Firestore teas 카탈로그 매칭 (3단계 우선순위)
   // 1순위: teaId(문서 ID) 매칭 — 가장 안정적
@@ -35,6 +37,15 @@ export function MemberDetailPage() {
     : null;
   const matchedBlend = matchedById ?? matchedByName;
   const todayBlendName = matchedBlend?.nameKo ?? matchedBlend?.name ?? member?.todayRecommendedTea ?? '';
+  const savedTeaCards = savedTeas.map((savedTea) => {
+    const savedBlend = blends.find((blend) => blend.id === savedTea.teaId);
+    return {
+      id: savedTea.id,
+      name: savedBlend?.nameKo ?? savedBlend?.name ?? savedTea.teaId,
+      reason: savedTea.reason,
+      savedAt: savedTea.savedAt,
+    };
+  });
 
   if (!member) {
     return (
@@ -134,23 +145,29 @@ export function MemberDetailPage() {
         </PageSection>
 
         <PageSection title="저장한 블렌드" description="이 회원이 선호하거나 효과를 느낌 블렌드 목록">
-          {member.savedTeas.length > 0 ? (
+          {savedTeasLoading ? (
+            <div className="rounded-2xl bg-slate-50 p-5 text-center text-sm text-slate-500">
+              저장된 블렌드를 불러오는 중입니다.
+            </div>
+          ) : savedTeaCards.length > 0 ? (
             <div className="space-y-3">
-              {member.savedTeas.map((tea) => (
-                <div key={tea.name} className="flex items-start justify-between rounded-2xl border border-slate-200 p-4">
+              {savedTeaCards.map((tea) => (
+                <div key={tea.id} className="flex items-start justify-between rounded-2xl border border-slate-200 p-4">
                   <div>
                     <p className="font-semibold text-slate-900">{tea.name}</p>
                     <p className="mt-1 text-sm text-slate-500">{tea.reason}</p>
                   </div>
-                  <span className="shrink-0 rounded-lg bg-slate-100 px-2 py-1 text-xs text-slate-500">
-                    {tea.savedAt}
-                  </span>
+                  {tea.savedAt ? (
+                    <span className="shrink-0 rounded-lg bg-slate-100 px-2 py-1 text-xs text-slate-500">
+                      {tea.savedAt}
+                    </span>
+                  ) : null}
                 </div>
               ))}
             </div>
           ) : (
             <div className="rounded-2xl bg-slate-50 p-5 text-center text-sm text-slate-500">
-              아직 저장한 블렌드가 없습니다.
+              저장된 블렌드가 없습니다. 앱에서 `savedTeas`가 추가되면 이곳에 표시됩니다.
             </div>
           )}
         </PageSection>
