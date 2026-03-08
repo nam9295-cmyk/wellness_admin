@@ -1,10 +1,10 @@
-import type { Member } from '../types/member';
+import type { Member, ParentChildView } from '../types/member';
 
 export const summaryCards = [
-  { label: '전체 회원', value: '128', change: '+4 this week' },
-  { label: '오늘 체크인', value: '94', change: '73% completed' },
-  { label: '주의 필요', value: '8', change: '2 new alerts' },
-  { label: '보호자 문의', value: '13', change: '5 unread' },
+  { label: '전체 회원', value: '128', change: '이번 주 +4명' },
+  { label: '오늘 체크인', value: '94', change: '73% 완료' },
+  { label: '확인 필요', value: '8', change: '새 알림 2건' },
+  { label: '보호자 문의', value: '13', change: '미확인 5건' },
 ];
 
 export const members: Member[] = [
@@ -33,6 +33,11 @@ export const members: Member[] = [
       { label: '기분', value: '좋음', trend: '상승', note: '오전 대화 참여 활발' },
       { label: '피로', value: '낮음', trend: '유지', note: '오후 활동 가능' },
       { label: '집중', value: '보통', trend: '안정', note: '그룹 활동 참여 무난' },
+    ],
+    savedTeas: [
+      { name: '캐모마일 티', reason: '수면 안정에 도움, 저녁 루틴으로 적합', savedAt: '2026-03-05' },
+      { name: '레몬그라스 티', reason: '소화 촉진, 식후 가볍게 한 잔', savedAt: '2026-03-03' },
+      { name: '페퍼민트 티', reason: '기분 전환, 오후 산책 전 추천', savedAt: '2026-02-28' },
     ],
     weeklyStatus: [
       { day: '03.01', status: 'Stable', summary: '식사, 수면 모두 안정적' },
@@ -70,6 +75,10 @@ export const members: Member[] = [
       { label: '피로', value: '높음', trend: '상승', note: '오전 피로감 호소' },
       { label: '집중', value: '낮음', trend: '하락', note: '활동 집중도 저하' },
     ],
+    savedTeas: [
+      { name: '루이보스 티', reason: '카페인 없이 항산화, 혈압 안정 보조', savedAt: '2026-03-06' },
+      { name: '히비스커스 티', reason: '혈압 관리 보조, 산뜻한 맛', savedAt: '2026-03-04' },
+    ],
     weeklyStatus: [
       { day: '03.01', status: 'Stable', summary: '평균 컨디션 유지' },
       { day: '03.02', status: 'Check', summary: '수면 질 저하' },
@@ -105,6 +114,11 @@ export const members: Member[] = [
       { label: '기분', value: '보통', trend: '상승', note: '치료 전 긴장감 있음' },
       { label: '피로', value: '보통', trend: '상승', note: '치료일에 변동 있음' },
       { label: '집중', value: '좋음', trend: '유지', note: '상담 반응 양호' },
+    ],
+    savedTeas: [
+      { name: '레몬밤 티', reason: '긴장 완화, 치료 전후 안정감', savedAt: '2026-03-06' },
+      { name: '페퍼민트 티', reason: '상쾌한 기분 전환, 피로 회복', savedAt: '2026-03-02' },
+      { name: '캐모마일 티', reason: '저녁 수면 루틴용', savedAt: '2026-02-27' },
     ],
     weeklyStatus: [
       { day: '03.01', status: 'Stable', summary: '주말 컨디션 양호' },
@@ -142,6 +156,10 @@ export const members: Member[] = [
       { label: '피로', value: '낮음', trend: '안정', note: '오전 활동 가능' },
       { label: '집중', value: '좋음', trend: '상승', note: '프로그램 몰입도 높음' },
     ],
+    savedTeas: [
+      { name: '보이차', reason: '소화 촉진, 식후 편안함', savedAt: '2026-03-05' },
+      { name: '녹차', reason: '항산화, 오전 집중력 보조', savedAt: '2026-03-01' },
+    ],
     weeklyStatus: [
       { day: '03.01', status: 'Stable', summary: '주말 활동 무난' },
       { day: '03.02', status: 'Stable', summary: '식사량 양호' },
@@ -151,6 +169,68 @@ export const members: Member[] = [
       { day: '03.06', status: 'Stable', summary: '산책 참여' },
       { day: '03.07', status: 'Stable', summary: '오전 체크 완료' },
     ],
+  },
+];
+
+export const parentChildViews: ParentChildView[] = [
+  {
+    childId: 'm-001',
+    childName: '김하늘',
+    group: '해바라기반',
+    status: 'Stable',
+    lastCheckTime: '2026-03-07 09:20',
+    todayChecked: true,
+    todayMood: '좋음',
+    sleepHours: '7.5시간',
+    fatigue: '낮음',
+    focus: '보통',
+    todayTea: '캐모마일 티',
+    carePoints: [
+      '오늘 오전 스트레칭에 잘 참여했어요.',
+      '점심 이후 수분 섭취를 한 번 더 챙겨드리면 좋겠어요.',
+      '전체적으로 컨디션이 안정적인 하루입니다.',
+    ],
+    recentTrend: [
+      { day: '03.03', status: 'Check', summary: '오후 살짝 피곤해하셨어요' },
+      { day: '03.04', status: 'Stable', summary: '복약도 잘 하시고 편안한 하루였어요' },
+      { day: '03.05', status: 'Stable', summary: '식사도 잘 드시고 기분이 좋으셨어요' },
+      { day: '03.06', status: 'Stable', summary: '정서적으로 안정된 하루를 보내셨어요' },
+      { day: '03.07', status: 'Stable', summary: '오전 체크 완료, 컨디션 양호해요' },
+    ],
+    encouragements: [
+      { date: '2026-03-06', message: '오늘도 건강하게 보내셔서 감사해요 💛' },
+      { date: '2026-03-04', message: '산책도 잘 하시고 정말 대단해요!' },
+    ],
+    rewardCount: 12,
+  },
+  {
+    childId: 'm-002',
+    childName: '박서준',
+    group: '은하수반',
+    status: 'Attention',
+    lastCheckTime: '2026-03-07 08:40',
+    todayChecked: true,
+    todayMood: '보통',
+    sleepHours: '5.8시간',
+    fatigue: '높음',
+    focus: '낮음',
+    todayTea: '루이보스 티',
+    carePoints: [
+      '오늘 아침 혈압에 약간 변동이 있어 점심 전에 다시 체크할 예정이에요.',
+      '오전 활동은 가볍게 조정해서 진행하고 있어요.',
+      '피로감을 느끼고 계셔서 충분히 쉴 수 있게 도와드리고 있어요.',
+    ],
+    recentTrend: [
+      { day: '03.03', status: 'Stable', summary: '활동에 참여하시며 괜찮은 하루였어요' },
+      { day: '03.04', status: 'Attention', summary: '혈압 변동이 관찰되었어요' },
+      { day: '03.05', status: 'Check', summary: '피로감이 조금 늘어난 하루였어요' },
+      { day: '03.06', status: 'Attention', summary: '오후에 좀 더 쉬셨어요' },
+      { day: '03.07', status: 'Attention', summary: '재측정 예정이에요' },
+    ],
+    encouragements: [
+      { date: '2026-03-05', message: '아버지 항상 응원해요, 건강하세요 🙏' },
+    ],
+    rewardCount: 8,
   },
 ];
 
@@ -179,7 +259,7 @@ export const settingsGroups = [
     items: ['이상 징후 알림', '보호자 알림 채널', '리마인더 빈도'],
   },
   {
-    title: '권한 설정',
-    items: ['관리자 권한', '보호자 열람 범위', '로그 기록'],
+    title: '접근 권한',
+    items: ['관리자 권한', '보호자 열람 범위', '활동 기록'],
   },
 ];

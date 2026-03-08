@@ -3,17 +3,17 @@ import { Header } from '../components/layout/Header';
 import { Sidebar } from '../components/layout/Sidebar';
 
 const pageTitles: Record<string, string> = {
-  '/': 'Dashboard',
-  '/members': 'Members',
-  '/parent-mode': 'Parent Mode',
-  '/settings': 'Settings',
+  '/': '대시보드',
+  '/members': '회원 관리',
+  '/parent-mode': '보호자 홈',
+  '/settings': '설정',
 };
 
 export function AppLayout() {
   const location = useLocation();
 
   const currentTitle =
-    location.pathname.startsWith('/members/') ? 'Member Detail' : pageTitles[location.pathname] ?? 'Dashboard';
+    location.pathname.startsWith('/members/') ? '회원 상세' : pageTitles[location.pathname] ?? '대시보드';
 
   return (
     <div className="min-h-screen bg-slate-100 text-slate-900">

@@ -1,18 +1,18 @@
 import { NavLink } from 'react-router-dom';
 
 const navigationItems = [
-  { to: '/', label: 'Dashboard', end: true },
-  { to: '/members', label: 'Members' },
-  { to: '/parent-mode', label: 'Parent Mode' },
-  { to: '/settings', label: 'Settings' },
+  { to: '/', label: '대시보드', end: true },
+  { to: '/members', label: '회원 관리' },
+  { to: '/parent-mode', label: '보호자 홈' },
+  { to: '/settings', label: '설정' },
 ];
 
 export function Sidebar() {
   return (
     <aside className="hidden w-72 flex-col border-r border-slate-200 bg-white lg:flex">
       <div className="border-b border-slate-200 px-6 py-5">
-        <p className="text-xs font-semibold uppercase tracking-[0.24em] text-teal-600">Wellness Web</p>
-        <h1 className="mt-2 text-xl font-semibold text-slate-900">Admin / Parent Dashboard</h1>
+        <p className="text-xs font-semibold uppercase tracking-[0.24em] text-teal-600">Wellness</p>
+        <h1 className="mt-2 text-xl font-semibold text-slate-900">관리자 대시보드</h1>
       </div>
 
       <nav className="flex-1 space-y-2 px-4 py-6">

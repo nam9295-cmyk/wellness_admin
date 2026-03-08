@@ -13,6 +13,12 @@ export type DailyStatus = {
   summary: string;
 };
 
+export type SavedTea = {
+  name: string;
+  reason: string;
+  savedAt: string;
+};
+
 export type ParentConnection = {
   guardianName: string | null;
   relationship: string;
@@ -36,5 +42,24 @@ export type Member = {
   carePoint: string;
   parentConnection: ParentConnection;
   metrics: WellnessMetric[];
+  savedTeas: SavedTea[];
   weeklyStatus: DailyStatus[];
+};
+
+export type ParentChildView = {
+  childId: string;
+  childName: string;
+  group: string;
+  status: MemberStatus;
+  lastCheckTime: string;
+  todayChecked: boolean;
+  todayMood: string;
+  sleepHours: string;
+  fatigue: string;
+  focus: string;
+  todayTea: string;
+  carePoints: string[];
+  recentTrend: DailyStatus[];
+  encouragements: { date: string; message: string }[];
+  rewardCount: number;
 };

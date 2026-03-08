@@ -3,7 +3,7 @@ import { settingsGroups } from '../data/mockData';
 
 export function SettingsPage() {
   return (
-    <PageSection title="설정" description="운영/알림/권한 설정 화면의 기본 섹션 구조">
+    <PageSection title="설정" description="운영 환경을 관리하는 공간입니다">
       <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
         {settingsGroups.map((group) => (
           <div key={group.title} className="rounded-2xl border border-slate-200 p-5">

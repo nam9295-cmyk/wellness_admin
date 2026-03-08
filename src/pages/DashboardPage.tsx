@@ -16,7 +16,7 @@ export function DashboardPage() {
       </section>
 
       <div className="grid gap-6 xl:grid-cols-[1.6fr_1fr]">
-        <PageSection title="실시간 회원 상태" description="더미 데이터 기준 주요 회원 상태 요약">
+        <PageSection title="오늘 회원 현황" description="체크인 기준, 주요 회원의 현재 상태입니다">
           <div className="space-y-3">
             {members.map((member) => (
               <div key={member.id} className="flex flex-col gap-3 rounded-2xl border border-slate-200 p-4 sm:flex-row sm:items-center sm:justify-between">
@@ -35,11 +35,11 @@ export function DashboardPage() {
           </div>
         </PageSection>
 
-        <PageSection title="오늘의 메모" description="추후 공지/업무 메모 카드로 확장할 수 있는 자리">
+        <PageSection title="오늘의 메모" description="운영 중 참고할 사항을 모아두는 공간입니다">
           <div className="space-y-3 text-sm text-slate-600">
-            <div className="rounded-2xl bg-teal-50 p-4">오전 체크인 마감 전 미완료 회원 4명 확인 필요</div>
+            <div className="rounded-2xl bg-teal-50 p-4">오전 체크인 미완료 회원 4명, 확인이 필요합니다</div>
             <div className="rounded-2xl bg-amber-50 p-4">혈압 재측정 대상 2명, 오후 라운딩에 포함 예정</div>
-            <div className="rounded-2xl bg-slate-100 p-4">보호자 문의 5건 미확인, Parent Mode 페이지에서 대응 가능</div>
+            <div className="rounded-2xl bg-slate-100 p-4">보호자 문의 5건 미확인, 보호자 홈에서 응대 가능</div>
           </div>
         </PageSection>
       </div>
