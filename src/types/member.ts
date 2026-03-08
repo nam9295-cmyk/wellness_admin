@@ -19,6 +19,7 @@ export type ParentConnection = {
   connected: boolean;
   lastSharedAt: string;
   channel: string;
+  nextShareNote: string;
 };
 
 export type Member = {
@@ -30,6 +31,7 @@ export type Member = {
   status: MemberStatus;
   lastCheckTime: string;
   todayRecommendedTea: string;
+  todayFocus: string;
   note: string;
   carePoint: string;
   parentConnection: ParentConnection;

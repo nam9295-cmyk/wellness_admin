@@ -17,6 +17,7 @@ export const members: Member[] = [
     status: 'Stable',
     lastCheckTime: '2026-03-07 09:20',
     todayRecommendedTea: '캐모마일 티',
+    todayFocus: '점심 이후 수분 섭취 체크',
     note: '아침 식사 및 복약 완료. 오전 스트레칭 참여율이 높고 대화 반응도 안정적입니다.',
     carePoint: '점심 이후 수분 섭취를 한 번 더 체크하면 좋습니다.',
     parentConnection: {
@@ -25,6 +26,7 @@ export const members: Member[] = [
       connected: true,
       lastSharedAt: '2026-03-07 10:10',
       channel: '앱 알림',
+      nextShareNote: '오전 활동 참여가 좋았고 컨디션이 안정적이라는 요약 전달 예정',
     },
     metrics: [
       { label: '수면', value: '7.5시간', trend: '안정', note: '기상 후 컨디션 양호' },
@@ -51,6 +53,7 @@ export const members: Member[] = [
     status: 'Attention',
     lastCheckTime: '2026-03-07 08:40',
     todayRecommendedTea: '루이보스 티',
+    todayFocus: '점심 전 혈압 재측정',
     note: '아침 측정에서 혈압 편차가 있어 재측정 예정입니다. 오전 활동은 가볍게 조정했습니다.',
     carePoint: '점심 전 혈압 재측정 후 보호자에게 짧은 브리핑 전송 권장.',
     parentConnection: {
@@ -59,6 +62,7 @@ export const members: Member[] = [
       connected: true,
       lastSharedAt: '2026-03-06 18:20',
       channel: '카카오 알림',
+      nextShareNote: '혈압 재측정 결과와 오전 활동 조정 사항을 보호자에게 공유 예정',
     },
     metrics: [
       { label: '수면', value: '5.8시간', trend: '하락', note: '야간 중간 각성 2회' },
@@ -85,6 +89,7 @@ export const members: Member[] = [
     status: 'Check',
     lastCheckTime: '2026-03-07 10:05',
     todayRecommendedTea: '레몬밤 티',
+    todayFocus: '물리치료 후 피로도 재체크',
     note: '물리치료 일정 전후 컨디션 기록을 확인 중입니다. 피로도 변동을 지켜보는 중입니다.',
     carePoint: '오후 치료 후 기분/피로 재체크가 필요합니다.',
     parentConnection: {
@@ -93,6 +98,7 @@ export const members: Member[] = [
       connected: true,
       lastSharedAt: '2026-03-07 09:00',
       channel: '앱 알림',
+      nextShareNote: '치료 전후 컨디션 변화와 오늘 추천 티 정보를 함께 전달 예정',
     },
     metrics: [
       { label: '수면', value: '6.7시간', trend: '유지', note: '수면 패턴은 보통' },
@@ -119,6 +125,7 @@ export const members: Member[] = [
     status: 'Stable',
     lastCheckTime: '2026-03-07 09:55',
     todayRecommendedTea: '보이차',
+    todayFocus: '산책 후 수분 섭취 확인',
     note: '오후 산책 참여 예정이며 오전 컨디션은 안정적입니다.',
     carePoint: '산책 후 피로도와 수분 섭취 체크 정도만 유지하면 됩니다.',
     parentConnection: {
@@ -127,6 +134,7 @@ export const members: Member[] = [
       connected: false,
       lastSharedAt: '연결 필요',
       channel: '미설정',
+      nextShareNote: '보호자 연결이 완료되면 활동 요약과 생활 패턴을 공유할 수 있습니다.',
     },
     metrics: [
       { label: '수면', value: '7.0시간', trend: '유지', note: '무난한 수면' },

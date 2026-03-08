@@ -32,6 +32,23 @@ export function MemberDetailPage() {
         <StatusBadge status={member.status} />
       </div>
 
+      <section className="grid gap-4 md:grid-cols-3">
+        <div className="rounded-3xl bg-slate-900 p-5 text-white shadow-sm">
+          <p className="text-sm text-slate-300">오늘 운영 포커스</p>
+          <p className="mt-3 text-2xl font-semibold">{member.todayFocus}</p>
+          <p className="mt-2 text-sm text-teal-300">담당자가 우선 확인할 핵심 포인트</p>
+        </div>
+        <div className="rounded-3xl bg-white p-5 shadow-sm ring-1 ring-slate-200">
+          <p className="text-sm text-slate-500">보호자 연결 상태</p>
+          <p className="mt-3 text-2xl font-semibold text-slate-900">{member.parentConnection.connected ? '연결 완료' : '연결 필요'}</p>
+          <p className="mt-2 text-sm text-slate-500">{member.parentConnection.channel}</p>
+        </div>
+        <div className="rounded-3xl bg-white p-5 shadow-sm ring-1 ring-slate-200">
+          <p className="text-sm text-slate-500">다음 공유 예정</p>
+          <p className="mt-3 text-lg font-semibold text-slate-900">{member.parentConnection.nextShareNote}</p>
+        </div>
+      </section>
+
       <PageSection title="기본 정보" description="관리자가 가장 먼저 확인하는 핵심 카드">
         <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-5">
           <div className="rounded-2xl bg-slate-100 p-4">
@@ -87,6 +104,9 @@ export function MemberDetailPage() {
             </div>
             <div className="rounded-2xl bg-slate-900 p-4 text-white">
               공유 채널: <span className="font-semibold">{member.parentConnection.channel}</span>
+            </div>
+            <div className="rounded-2xl bg-teal-50 p-4 text-teal-900">
+              전달 예정 메모: <span className="font-semibold">{member.parentConnection.nextShareNote}</span>
             </div>
           </div>
         </PageSection>
