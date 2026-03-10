@@ -1,22 +1,25 @@
 import { Link } from 'react-router-dom';
 import { PageSection } from '../components/common/PageSection';
 import { StatusBadge } from '../components/common/StatusBadge';
+import { useAuth } from '../contexts/AuthContext';
 import { summaryCards as mockSummaryCards } from '../data/mockData';
 import { useBlends } from '../hooks/useBlends';
 import { useMembers } from '../hooks/useMembers';
 
 export function DashboardPage() {
-  const { members, isFirestore } = useMembers();
+  const { role, organizationId, canAccessOrg } = useAuth();
+  const { members, isFirestore } = useMembers({ role, organizationId });
   const { blends, isFirestore: isBlendsFs } = useBlends();
+  const visibleMembers = members.filter((member) => canAccessOrg(member.organizationId));
 
   // ── 대시보드 통계 (Firestore → mockData fallback) ──
-  const totalCount = members.length;
-  const stableCount = members.filter((m) => m.status === 'Stable').length;
-  const attentionCount = members.filter((m) => m.status === 'Attention').length;
-  const checkCount = members.filter((m) => m.status === 'Check').length;
+  const totalCount = visibleMembers.length;
+  const stableCount = visibleMembers.filter((m) => m.status === 'Stable').length;
+  const attentionCount = visibleMembers.filter((m) => m.status === 'Attention').length;
+  const checkCount = visibleMembers.filter((m) => m.status === 'Check').length;
 
   const todayStr = new Date().toISOString().slice(0, 10);
-  const todayCheckedCount = members.filter((m) =>
+  const todayCheckedCount = visibleMembers.filter((m) =>
     m.lastCheckTime?.startsWith(todayStr),
   ).length;
   const checkinPct = totalCount > 0 ? Math.round((todayCheckedCount / totalCount) * 100) : 0;
@@ -44,8 +47,8 @@ export function DashboardPage() {
 
       <div className="grid gap-6 xl:grid-cols-[1.6fr_1fr]">
         <PageSection title="오늘 회원 현황" description="체크인 기준, 주요 회원의 현재 상태입니다">
-          <div className="space-y-3">
-            {members.map((member) => (
+            <div className="space-y-3">
+            {visibleMembers.map((member) => (
               <Link key={member.id} to={`/members/${member.id}`} className="group flex flex-col gap-3 rounded-2xl border border-slate-200 p-4 transition-colors hover:bg-teal-50/60 sm:flex-row sm:items-center sm:justify-between">
                 <div>
                   <p className="font-semibold text-slate-900">{member.name}</p>

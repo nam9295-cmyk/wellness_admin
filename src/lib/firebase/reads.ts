@@ -24,7 +24,15 @@ import {
 } from 'firebase/firestore';
 import { db } from '../firebase';
 import { COLLECTIONS, SUBCOLLECTIONS } from './collections';
-import type { MemberStatus, NoteVisibility } from '../../types/member';
+import type {
+  AdminUserRole,
+  AdminUserStatus,
+  MemberRole,
+  MemberStatus,
+  NoteVisibility,
+  OrganizationStatus,
+  OrganizationType,
+} from '../../types/member';
 
 // ---------------------------------------------------------------------------
 // Firestore document types (what Firestore stores)
@@ -50,14 +58,44 @@ export interface MemberDoc {
   age: number;
   room: string;
   group: string;
-  facilityId: string;
+  organizationId: string;
+  organizationName: string;
+  role: MemberRole;
+  isTestAccount: boolean;
+  testGroup: string | null;
   status: MemberStatus;
+  lastActiveAt: string;
   lastCheckTime: string;
   todayBlendId: string;
   todayBlendName: string;
   todayFocus: string;
   note: string;
+  facilityId?: string;
   userId?: string;
+}
+
+/** Firestore: organizations/{organizationId} */
+export interface OrganizationDoc {
+  id: string;
+  name: string;
+  type: OrganizationType;
+  status: OrganizationStatus;
+  isTestOrganization: boolean;
+  ownerAdminUid: string;
+  memberCount: number;
+  activeMemberCount: number;
+  lastActivityAt: string;
+  createdAt: string;
+}
+
+/** Firestore: adminUsers/{uid} */
+export interface AdminUserDoc {
+  uid: string;
+  name: string;
+  email: string;
+  role: AdminUserRole;
+  organizationId: string | null;
+  status: AdminUserStatus;
 }
 
 /** Firestore: members/{memberId}/dailySummaries/{date} */
@@ -144,8 +182,24 @@ export async function fetchMembers(): Promise<MemberDoc[]> {
 }
 
 /**
- * Fetch members filtered by facility.
- * Firestore collection: 'members' where facilityId == facilityId
+ * Fetch members filtered by organization.
+ * Firestore collection: 'members' where organizationId == organizationId
+ */
+export async function fetchMembersByOrganization(organizationId: string): Promise<MemberDoc[]> {
+  const q = query(
+    collection(db, COLLECTIONS.members),
+    where('organizationId', '==', organizationId),
+  );
+  const snapshot = await getDocs(q);
+  return snapshot.docs.map((d) => ({
+    id: d.id,
+    ...d.data(),
+  })) as MemberDoc[];
+}
+
+/**
+ * Legacy helper kept for backward compatibility.
+ * Prefer fetchMembersByOrganization() for new admin scope work.
  */
 export async function fetchMembersByFacility(facilityId: string): Promise<MemberDoc[]> {
   const q = query(
@@ -167,6 +221,26 @@ export async function fetchMemberById(memberId: string): Promise<MemberDoc | nul
   const docSnap = await getDoc(doc(db, COLLECTIONS.members, memberId));
   if (!docSnap.exists()) return null;
   return { id: docSnap.id, ...docSnap.data() } as MemberDoc;
+}
+
+export async function fetchOrganizations(): Promise<OrganizationDoc[]> {
+  const snapshot = await getDocs(collection(db, COLLECTIONS.organizations));
+  return snapshot.docs.map((d) => ({
+    id: d.id,
+    ...d.data(),
+  })) as OrganizationDoc[];
+}
+
+export async function fetchOrganizationById(organizationId: string): Promise<OrganizationDoc | null> {
+  const docSnap = await getDoc(doc(db, COLLECTIONS.organizations, organizationId));
+  if (!docSnap.exists()) return null;
+  return { id: docSnap.id, ...docSnap.data() } as OrganizationDoc;
+}
+
+export async function fetchAdminUserById(uid: string): Promise<AdminUserDoc | null> {
+  const docSnap = await getDoc(doc(db, COLLECTIONS.adminUsers, uid));
+  if (!docSnap.exists()) return null;
+  return { uid: docSnap.id, ...docSnap.data() } as AdminUserDoc;
 }
 
 /**

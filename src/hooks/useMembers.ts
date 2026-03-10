@@ -1,7 +1,13 @@
 import { useCallback, useEffect, useState } from 'react';
-import { fetchMembers, fetchMemberById, type MemberDoc } from '../lib/firebase/reads';
+import { canAccessOrganization } from '../lib/accessControl';
+import {
+  fetchMembers,
+  fetchMemberById,
+  fetchMembersByOrganization,
+  type MemberDoc,
+} from '../lib/firebase/reads';
 import { members as mockMembers } from '../data/mockData';
-import type { Member, ParentConnection } from '../types/member';
+import type { Member, ParentConnection, UserRole } from '../types/member';
 
 // ---------------------------------------------------------------------------
 // MemberDoc → Member 매핑
@@ -33,7 +39,13 @@ function memberDocToMember(doc: MemberDoc): Member {
     age: doc.age,
     room: doc.room,
     group: doc.group,
+    organizationId: doc.organizationId ?? mock?.organizationId ?? '',
+    organizationName: doc.organizationName ?? mock?.organizationName ?? '',
+    role: doc.role ?? mock?.role ?? 'member',
+    isTestAccount: doc.isTestAccount ?? mock?.isTestAccount ?? false,
+    testGroup: doc.testGroup ?? mock?.testGroup ?? null,
     status: doc.status,
+    lastActiveAt: doc.lastActiveAt ?? mock?.lastActiveAt ?? '',
     lastCheckTime: doc.lastCheckTime,
     todayRecommendedTea: doc.todayBlendName,
     todayTeaId: doc.todayBlendId,
@@ -62,13 +74,18 @@ interface UseMembersResult {
   refetch: () => void;
 }
 
+interface UseMembersOptions {
+  role?: UserRole;
+  organizationId?: string | null;
+}
+
 /**
  * 회원 목록을 Firestore members 컬렉션에서 가져오는 훅.
  *
  * - 성공: Firestore 데이터 + mockData 보강 → isFirestore = true
  * - 실패/빈 결과: mockMembers 전체 반환 → isFirestore = false
  */
-export function useMembers(): UseMembersResult {
+export function useMembers(options: UseMembersOptions = {}): UseMembersResult {
   const [members, setMembers] = useState<Member[]>(mockMembers);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -83,21 +100,39 @@ export function useMembers(): UseMembersResult {
     async function load() {
       setLoading(true);
       try {
-        const docs = await fetchMembers();
+        if (options.role === 'orgAdmin' && !options.organizationId) {
+          setMembers([]);
+          setIsFirestore(false);
+          return;
+        }
+
+        const docs =
+          options.role === 'orgAdmin' && options.organizationId
+            ? await fetchMembersByOrganization(options.organizationId)
+            : await fetchMembers();
         if (cancelled) return;
 
         if (docs.length > 0) {
-          setMembers(docs.map(memberDocToMember));
+          const scopedMembers = docs
+            .map(memberDocToMember)
+            .filter((member) => canAccessOrganization(options.role ?? 'superAdmin', options.organizationId, member.organizationId));
+          setMembers(scopedMembers);
           setIsFirestore(true);
         } else {
-          setMembers(mockMembers);
+          const fallbackMembers = mockMembers.filter((member) =>
+            canAccessOrganization(options.role ?? 'superAdmin', options.organizationId, member.organizationId),
+          );
+          setMembers(fallbackMembers);
           setIsFirestore(false);
         }
       } catch (err) {
         if (cancelled) return;
         const message = err instanceof Error ? err.message : 'Firestore members 읽기 실패';
         setError(message);
-        setMembers(mockMembers);
+        const fallbackMembers = mockMembers.filter((member) =>
+          canAccessOrganization(options.role ?? 'superAdmin', options.organizationId, member.organizationId),
+        );
+        setMembers(fallbackMembers);
         setIsFirestore(false);
         console.warn('[useMembers] Firestore fetch failed, using mockData fallback:', message);
       } finally {
@@ -107,7 +142,7 @@ export function useMembers(): UseMembersResult {
 
     load();
     return () => { cancelled = true; };
-  }, [fetchKey]);
+  }, [fetchKey, options.organizationId, options.role]);
 
   return { members, loading, error, isFirestore, refetch };
 }
@@ -125,7 +160,7 @@ interface UseMemberResult {
  * - 성공: Firestore 데이터 + mockData 보강
  * - 실패: mockMembers에서 ID 매칭
  */
-export function useMember(memberId: string | undefined): UseMemberResult {
+export function useMember(memberId: string | undefined, options: UseMembersOptions = {}): UseMemberResult {
   const mockMember = memberId ? mockMembers.find((m) => m.id === memberId) ?? null : null;
 
   const [member, setMember] = useState<Member | null>(mockMember);
@@ -144,22 +179,44 @@ export function useMember(memberId: string | undefined): UseMemberResult {
 
     async function load() {
       try {
+        if (options.role === 'orgAdmin' && !options.organizationId) {
+          setMember(null);
+          setError('organizationId가 없는 orgAdmin은 회원 데이터를 조회할 수 없습니다.');
+          setIsFirestore(false);
+          return;
+        }
+
         const doc = await fetchMemberById(memberId!);
         if (cancelled) return;
 
         if (doc) {
-          setMember(memberDocToMember(doc));
+          const mappedMember = memberDocToMember(doc);
+          if (!canAccessOrganization(options.role ?? 'superAdmin', options.organizationId, mappedMember.organizationId)) {
+            setMember(null);
+            setError('해당 조직의 회원을 볼 수 있는 권한이 없습니다.');
+            setIsFirestore(true);
+            return;
+          }
+          setMember(mappedMember);
           setIsFirestore(true);
         } else {
           // Firestore에 해당 문서 없음 → mockData fallback
-          setMember(mockMember);
+          if (mockMember && canAccessOrganization(options.role ?? 'superAdmin', options.organizationId, mockMember.organizationId)) {
+            setMember(mockMember);
+          } else {
+            setMember(null);
+          }
           setIsFirestore(false);
         }
       } catch (err) {
         if (cancelled) return;
         const message = err instanceof Error ? err.message : 'Firestore member 읽기 실패';
         setError(message);
-        setMember(mockMember);
+        if (mockMember && canAccessOrganization(options.role ?? 'superAdmin', options.organizationId, mockMember.organizationId)) {
+          setMember(mockMember);
+        } else {
+          setMember(null);
+        }
         setIsFirestore(false);
         console.warn('[useMember] Firestore fetch failed, using mockData fallback:', message);
       } finally {
@@ -169,7 +226,7 @@ export function useMember(memberId: string | undefined): UseMemberResult {
 
     load();
     return () => { cancelled = true; };
-  }, [memberId]);
+  }, [memberId, options.organizationId, options.role]);
 
   return { member, loading, error, isFirestore };
 }

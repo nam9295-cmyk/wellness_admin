@@ -24,6 +24,12 @@ export const COLLECTIONS = {
   /** Members (no rename needed) */
   members: 'members',
 
+  /** Organizations for orgAdmin / superAdmin scoping */
+  organizations: 'organizations',
+
+  /** Admin user profiles and role mapping */
+  adminUsers: 'adminUsers',
+
   /** Facilities (no rename needed) */
   facilities: 'facilities',
 

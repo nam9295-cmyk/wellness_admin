@@ -5,7 +5,7 @@ type HeaderProps = {
 };
 
 export function Header({ title }: HeaderProps) {
-  const { role, toggleRole, isParent } = useAuth();
+  const { role, toggleRole, isParent, isSuperAdmin, isOrgAdmin, organizationId } = useAuth();
 
   return (
     <header className="sticky top-0 z-10 border-b border-slate-200 bg-white/90 backdrop-blur">
@@ -34,10 +34,10 @@ export function Header({ title }: HeaderProps) {
               isParent ? 'bg-teal-100 text-teal-700' : 'bg-emerald-100 text-emerald-700'
             }`}
           >
-            {isParent ? '가족' : '관리자'}
+            {isParent ? '가족' : isSuperAdmin ? '전체 관리자' : isOrgAdmin ? '업체 관리자' : '관리자'}
           </span>
           <span className="rounded-full bg-slate-100 px-3 py-1 text-xs font-semibold text-slate-600">
-            {role === 'admin' ? '웹 대시보드' : '가족 홈'}
+            {isParent ? '가족 홈' : organizationId ?? role}
           </span>
         </div>
       </div>

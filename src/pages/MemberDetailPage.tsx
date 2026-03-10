@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { PageSection } from '../components/common/PageSection';
 import { StatusBadge } from '../components/common/StatusBadge';
+import { useAuth } from '../contexts/AuthContext';
 import { useConditionNotes } from '../hooks/useConditionNotes';
 import { useBlends } from '../hooks/useBlends';
 import { useMember } from '../hooks/useMembers';
@@ -10,6 +11,7 @@ import type { CareNote } from '../types/member';
 
 export function MemberDetailPage() {
   const { memberId } = useParams();
+  const { role, organizationId, canAccessOrg } = useAuth();
   const { notes: firestoreNotes } = useConditionNotes(memberId);
   const [localCareNotes, setLocalCareNotes] = useState<CareNote[]>([]);
   const [noteFilter, setNoteFilter] = useState<'all' | 'admin_only' | 'parent_visible'>('all');
@@ -20,7 +22,7 @@ export function MemberDetailPage() {
     setLocalCareNotes(firestoreNotes);
   }, [firestoreNotes]);
 
-  const { member } = useMember(memberId);
+  const { member, error: memberError } = useMember(memberId, { role, organizationId });
 
   const { blends, isFirestore: isBlendsFirestore } = useBlends();
   const { savedTeas, loading: savedTeasLoading } = useSavedTeas(memberId);
@@ -47,11 +49,31 @@ export function MemberDetailPage() {
     };
   });
 
+  if (memberError?.includes('권한')) {
+    return (
+      <PageSection title="접근 권한이 없습니다" description="현재 로그인 역할로는 이 organization의 회원을 볼 수 없습니다.">
+        <Link to="/members" className="text-sm font-semibold text-teal-700 hover:text-teal-800">
+          회원 목록으로 돌아가기
+        </Link>
+      </PageSection>
+    );
+  }
+
   if (!member) {
     return (
       <PageSection title="회원 정보를 찾을 수 없습니다">
         <Link to="/members" className="text-sm font-semibold text-teal-700 hover:text-teal-800">
           목록으로 돌아가기
+        </Link>
+      </PageSection>
+    );
+  }
+
+  if (!canAccessOrg(member.organizationId)) {
+    return (
+      <PageSection title="접근 권한이 없습니다" description="현재 로그인 역할로는 이 organization의 회원을 볼 수 없습니다.">
+        <Link to="/members" className="text-sm font-semibold text-teal-700 hover:text-teal-800">
+          회원 목록으로 돌아가기
         </Link>
       </PageSection>
     );
@@ -71,6 +93,9 @@ export function MemberDetailPage() {
               {member.group} · {member.room} · {member.age}세
             </p>
             <div className="mt-3 flex flex-wrap items-center gap-3 text-sm text-slate-600">
+              <span className="rounded-lg bg-slate-100 px-3 py-1">
+                organization: <span className="font-semibold text-slate-900">{member.organizationName}</span>
+              </span>
               <span className="rounded-lg bg-slate-100 px-3 py-1">
                 가족: <span className="font-semibold text-slate-900">{member.parentConnection.guardianName ?? '미연결'}</span>
               </span>

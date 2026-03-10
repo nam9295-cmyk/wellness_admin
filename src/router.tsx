@@ -14,7 +14,7 @@ export const router = createBrowserRouter([
     children: [
       // Admin-only routes
       {
-        element: <RequireRole roles={['admin']} />,
+        element: <RequireRole roles={['superAdmin', 'orgAdmin']} />,
         children: [
           {
             index: true,

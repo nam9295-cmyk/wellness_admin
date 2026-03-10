@@ -1,6 +1,16 @@
 export type MemberStatus = 'Stable' | 'Attention' | 'Check';
 
-export type UserRole = 'admin' | 'parent';
+export type AdminUserRole = 'superAdmin' | 'orgAdmin';
+
+export type UserRole = AdminUserRole | 'parent';
+
+export type AdminUserStatus = 'active' | 'invited' | 'disabled';
+
+export type OrganizationStatus = 'active' | 'inactive' | 'suspended';
+
+export type OrganizationType = 'wellness' | 'care' | 'test';
+
+export type MemberRole = 'member' | 'tester';
 
 export type NoteVisibility = 'admin_only' | 'parent_visible' | 'member_visible';
 
@@ -23,6 +33,28 @@ export type SavedTea = {
   name: string;
   reason: string;
   savedAt: string;
+};
+
+export type Organization = {
+  id: string;
+  name: string;
+  type: OrganizationType;
+  status: OrganizationStatus;
+  isTestOrganization: boolean;
+  ownerAdminUid: string;
+  memberCount: number;
+  activeMemberCount: number;
+  lastActivityAt: string;
+  createdAt: string;
+};
+
+export type AdminUser = {
+  uid: string;
+  name: string;
+  email: string;
+  role: AdminUserRole;
+  organizationId: string | null;
+  status: AdminUserStatus;
 };
 
 export type ParentConnection = {
@@ -62,7 +94,13 @@ export type Member = {
   age: number;
   room: string;
   group: string;
+  organizationId: string;
+  organizationName: string;
+  role: MemberRole;
+  isTestAccount: boolean;
+  testGroup: string | null;
   status: MemberStatus;
+  lastActiveAt: string;
   lastCheckTime: string;
   todayRecommendedTea: string;
   todayTeaId?: string;
