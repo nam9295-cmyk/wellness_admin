@@ -11,6 +11,7 @@
  */
 
 import { useEffect, useState } from 'react';
+import { getTodayDateString } from '../lib/date';
 import { fetchDailySummaries, type DailySummaryDoc } from '../lib/firebase/reads';
 
 // ---------------------------------------------------------------------------
@@ -78,7 +79,7 @@ export function useDailySummaries(
     return () => { cancelled = true; };
   }, [memberId, limitCount]);
 
-  const todayStr = new Date().toISOString().slice(0, 10);
+  const todayStr = getTodayDateString();
   const today = summaries.find((s) => s.date === todayStr) ?? null;
 
   return { summaries, today, loading, error, isFirestore };

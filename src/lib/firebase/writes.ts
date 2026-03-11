@@ -5,6 +5,7 @@
  */
 
 import { collection, doc, setDoc, writeBatch } from 'firebase/firestore';
+import { getTodayDateString, getTimestampString } from '../date';
 import { db } from '../firebase';
 import { COLLECTIONS, SUBCOLLECTIONS } from './collections';
 import type {
@@ -87,8 +88,8 @@ export async function addMember(data: AddMemberData): Promise<string> {
   });
 
   // 2. 오늘의 일일 요약 초기값
-  const today = new Date().toISOString().slice(0, 10); // YYYY-MM-DD
-  const now = new Date().toISOString().slice(0, 16).replace('T', ' '); // YYYY-MM-DD HH:mm
+  const today = getTodayDateString();
+  const now = getTimestampString();
   const summaryRef = doc(
     collection(db, SUBCOLLECTIONS.dailySummaries(memberRef.id)),
     today,
@@ -101,6 +102,7 @@ export async function addMember(data: AddMemberData): Promise<string> {
     blendName: data.todayBlendName || '',
     mood: '',
     sleep: '',
+    stress: '',
     fatigue: '',
     focus: '',
   });
@@ -121,7 +123,7 @@ export async function addMember(data: AddMemberData): Promise<string> {
 }
 
 export async function createOrganization(data: CreateOrganizationData): Promise<string> {
-  const now = new Date().toISOString().slice(0, 16).replace('T', ' ');
+  const now = getTimestampString();
   const organizationRef = data.organizationId
     ? doc(db, COLLECTIONS.organizations, data.organizationId)
     : doc(collection(db, COLLECTIONS.organizations));
@@ -159,7 +161,7 @@ export async function upsertAdminUser(data: UpsertAdminUserData): Promise<string
 export async function createTestOrganizationBundle(
   data: CreateTestOrganizationBundleData,
 ): Promise<{ organizationId: string; adminUid: string }> {
-  const now = new Date().toISOString().slice(0, 16).replace('T', ' ');
+  const now = getTimestampString();
 
   const organizationId = await createOrganization({
     organizationId: data.organizationId,

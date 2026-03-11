@@ -8,9 +8,13 @@ type RequireRoleProps = {
 };
 
 export function RequireRole({ roles, redirectTo }: RequireRoleProps) {
-  const { role } = useAuth();
+  const { role, hasAdminAccess, isHydrating } = useAuth();
 
-  if (!roles.includes(role)) {
+  if (isHydrating) {
+    return null;
+  }
+
+  if (!roles.includes(role) || !hasAdminAccess) {
     const fallback = redirectTo ?? (role === 'parent' ? '/parent-mode' : '/');
     return <Navigate to={fallback} replace />;
   }

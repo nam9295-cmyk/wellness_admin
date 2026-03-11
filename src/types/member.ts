@@ -15,7 +15,7 @@ export type MemberRole = 'member' | 'tester';
 export type NoteVisibility = 'admin_only' | 'parent_visible' | 'member_visible';
 
 export type WellnessMetric = {
-  label: '수면' | '기분' | '피로' | '집중';
+  label: '수면' | '기분' | '스트레스' | '피로' | '집중';
   value: string;
   summaryLabel: string;
   trend: string;
@@ -122,6 +122,7 @@ export type ParentChildView = {
   todayChecked: boolean;
   todayMood: string;
   sleepHours: string;
+  stress?: string;
   fatigue: string;
   focus: string;
   todayTea: string;

@@ -106,10 +106,14 @@ export interface DailySummaryDoc {
   adminSummary: string;
   parentSummary: string;
   blendName: string;
-  mood?: string;
-  sleep?: string;
-  fatigue?: string;
-  focus?: string;
+  mood?: string | number;
+  sleep?: string | number;
+  stress?: string | number;
+  fatigue?: string | number;
+  focus?: string | number;
+  meal?: string | number;
+  exercise?: string | number;
+  water?: string | number;
 }
 
 /** Firestore: members/{memberId}/conditionNotes/{noteId} */

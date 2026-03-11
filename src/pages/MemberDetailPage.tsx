@@ -4,25 +4,50 @@ import { PageSection } from '../components/common/PageSection';
 import { StatusBadge } from '../components/common/StatusBadge';
 import { useAuth } from '../contexts/AuthContext';
 import { useConditionNotes } from '../hooks/useConditionNotes';
+import { useDailySummaries } from '../hooks/useDailySummaries';
 import { useBlends } from '../hooks/useBlends';
 import { useMember } from '../hooks/useMembers';
 import { useSavedTeas } from '../hooks/useSavedTeas';
-import type { CareNote } from '../types/member';
+import { formatDailySummaryValue } from '../lib/dailySummaryDisplay';
+import type { CareNote, WellnessMetric } from '../types/member';
+
+const METRIC_CONFIG: Array<{ label: WellnessMetric['label']; key: 'sleep' | 'mood' | 'stress' | 'fatigue' | 'focus' }> = [
+  { label: '수면', key: 'sleep' },
+  { label: '기분', key: 'mood' },
+  { label: '스트레스', key: 'stress' },
+  { label: '피로', key: 'fatigue' },
+  { label: '집중', key: 'focus' },
+];
 
 export function MemberDetailPage() {
   const { memberId } = useParams();
-  const { role, organizationId, canAccessOrg } = useAuth();
-  const { notes: firestoreNotes } = useConditionNotes(memberId);
+  const { role, organizationId, status, canAccessOrg } = useAuth();
+  const { notes: firestoreNotes, isFirestore: isNotesFirestore } = useConditionNotes(memberId);
+  const { summaries } = useDailySummaries(memberId, 7);
   const [localCareNotes, setLocalCareNotes] = useState<CareNote[]>([]);
   const [noteFilter, setNoteFilter] = useState<'all' | 'admin_only' | 'parent_visible'>('all');
   const [newNoteText, setNewNoteText] = useState('');
+  const resolvedNotes = isNotesFirestore ? firestoreNotes : [];
+  const latestSummary = summaries[0] ?? null;
+  const metricCards = METRIC_CONFIG.map(({ label, key }) => ({
+    label,
+    value: formatDailySummaryValue(key, latestSummary?.[key]),
+    trend: latestSummary ? `${latestSummary.date} 기준` : '요약 데이터 없음',
+    note: latestSummary?.adminSummary || 'dailySummaries 연결 후 이 영역에 최신 요약이 표시됩니다.',
+  }));
+  const weeklyStatus = summaries.map((summary) => ({
+    day: summary.date.slice(5),
+    status: summary.status,
+    summary: summary.adminSummary || summary.parentSummary || '요약 없음',
+    parentSummary: summary.parentSummary,
+  }));
 
   // Firestore / mockData 노트가 로드되면 로컬 상태에 동기화
   useEffect(() => {
-    setLocalCareNotes(firestoreNotes);
-  }, [firestoreNotes]);
+    setLocalCareNotes(resolvedNotes);
+  }, [resolvedNotes]);
 
-  const { member, error: memberError } = useMember(memberId, { role, organizationId });
+  const { member, error: memberError } = useMember(memberId, { role, organizationId, status });
 
   const { blends, isFirestore: isBlendsFirestore } = useBlends();
   const { savedTeas, loading: savedTeasLoading } = useSavedTeas(memberId);
@@ -124,14 +149,16 @@ export function MemberDetailPage() {
         </div>
         <div className="rounded-3xl bg-white p-5 shadow-sm ring-1 ring-slate-200">
           <p className="text-sm text-slate-500">다음 공유 예정</p>
-          <p className="mt-3 text-lg font-semibold text-slate-900">{member.parentConnection.nextShareNote}</p>
+          <p className="mt-3 text-lg font-semibold text-slate-900">
+            {member.parentConnection.nextShareNote || '보호자 공유 데이터 연결 전'}
+          </p>
         </div>
       </section>
 
-      {/* 수면 / 기분 / 피로 / 집중 흐름 카드 */}
-      <PageSection title="웰니스 흐름" description="수면 · 기분 · 피로 · 집중 — 오늘 기준">
-        <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
-          {member.metrics.map((metric) => (
+      {/* 수면 / 기분 / 스트레스 / 피로 / 집중 흐름 카드 */}
+      <PageSection title="웰니스 흐름" description="수면 · 기분 · 스트레스 · 피로 · 집중 — 오늘 기준">
+        <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-5">
+          {metricCards.map((metric) => (
             <div key={metric.label} className="rounded-2xl border border-slate-200 bg-white p-5">
               <p className="text-sm text-slate-500">{metric.label}</p>
               <p className="mt-3 text-2xl font-semibold text-slate-900">{metric.value}</p>
@@ -144,17 +171,23 @@ export function MemberDetailPage() {
 
       {/* 최근 7일 흐름 — 풀 와이드 */}
       <PageSection title="최근 7일 흐름" description="주간 상태 변화를 한눈에 확인할 수 있습니다">
-        <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
-          {member.weeklyStatus.map((item) => (
-            <div key={item.day} className="flex items-center justify-between rounded-2xl border border-slate-200 p-4">
-              <div>
-                <p className="font-semibold text-slate-900">{item.day}</p>
-                <p className="mt-1 text-sm text-slate-500">{item.summary}</p>
+        {weeklyStatus.length > 0 ? (
+          <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
+            {weeklyStatus.map((item) => (
+              <div key={item.day} className="flex items-center justify-between rounded-2xl border border-slate-200 p-4">
+                <div>
+                  <p className="font-semibold text-slate-900">{item.day}</p>
+                  <p className="mt-1 text-sm text-slate-500">{item.summary}</p>
+                </div>
+                <StatusBadge status={item.status} />
               </div>
-              <StatusBadge status={item.status} />
-            </div>
-          ))}
-        </div>
+            ))}
+          </div>
+        ) : (
+          <div className="rounded-2xl bg-slate-50 p-5 text-center text-sm text-slate-500">
+            최근 7일 요약 데이터가 없습니다. `dailySummaries`가 연결되면 이곳에 표시됩니다.
+          </div>
+        )}
       </PageSection>
 
       {/* 추천 블렌드 + 저장한 블렌드 */}

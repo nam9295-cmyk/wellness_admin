@@ -6,8 +6,7 @@ import {
   fetchMembersByOrganization,
   type MemberDoc,
 } from '../lib/firebase/reads';
-import { members as mockMembers } from '../data/mockData';
-import type { Member, ParentConnection, UserRole } from '../types/member';
+import type { AdminUserStatus, Member, ParentConnection, UserRole } from '../types/member';
 
 // ---------------------------------------------------------------------------
 // MemberDoc → Member 매핑
@@ -26,38 +25,33 @@ const DEFAULT_PARENT_CONNECTION: ParentConnection = {
  * Firestore MemberDoc → UI Member 타입 변환.
  *
  * - 직접 매핑 가능한 필드: Firestore 우선
- * - 서브컬렉션/복합 필드(metrics, savedTeas 등): 같은 ID의 mockData에서 보강
- * - mockData에도 없으면 빈 기본값
+ * - 서브컬렉션/복합 필드(metrics, savedTeas, weeklyStatus 등): 여기서는 비워두고
+ *   상세 화면 훅(useSavedTeas, useDailySummaries, useConditionNotes)에서 읽습니다.
  */
 function memberDocToMember(doc: MemberDoc): Member {
-  const mock = mockMembers.find((m) => m.id === doc.id);
-
   return {
-    // Firestore 직접 매핑 (우선)
     id: doc.id,
     name: doc.name,
     age: doc.age,
     room: doc.room,
     group: doc.group,
-    organizationId: doc.organizationId ?? mock?.organizationId ?? '',
-    organizationName: doc.organizationName ?? mock?.organizationName ?? '',
-    role: doc.role ?? mock?.role ?? 'member',
-    isTestAccount: doc.isTestAccount ?? mock?.isTestAccount ?? false,
-    testGroup: doc.testGroup ?? mock?.testGroup ?? null,
+    organizationId: doc.organizationId ?? '',
+    organizationName: doc.organizationName ?? '',
+    role: doc.role ?? 'member',
+    isTestAccount: doc.isTestAccount ?? false,
+    testGroup: doc.testGroup ?? null,
     status: doc.status,
-    lastActiveAt: doc.lastActiveAt ?? mock?.lastActiveAt ?? '',
+    lastActiveAt: doc.lastActiveAt ?? '',
     lastCheckTime: doc.lastCheckTime,
     todayRecommendedTea: doc.todayBlendName,
     todayTeaId: doc.todayBlendId,
     todayFocus: doc.todayFocus,
     note: doc.note,
-
-    // 서브컬렉션/복합 필드 — mockData에서 보강 (향후 Firestore 서브컬렉션 연결 시 교체)
-    carePoint: mock?.carePoint ?? '',
-    parentConnection: mock?.parentConnection ?? DEFAULT_PARENT_CONNECTION,
-    metrics: mock?.metrics ?? [],
-    savedTeas: mock?.savedTeas ?? [],
-    weeklyStatus: mock?.weeklyStatus ?? [],
+    carePoint: '',
+    parentConnection: DEFAULT_PARENT_CONNECTION,
+    metrics: [],
+    savedTeas: [],
+    weeklyStatus: [],
   };
 }
 
@@ -77,16 +71,17 @@ interface UseMembersResult {
 interface UseMembersOptions {
   role?: UserRole;
   organizationId?: string | null;
+  status?: AdminUserStatus | null;
 }
 
 /**
  * 회원 목록을 Firestore members 컬렉션에서 가져오는 훅.
  *
- * - 성공: Firestore 데이터 + mockData 보강 → isFirestore = true
- * - 실패/빈 결과: mockMembers 전체 반환 → isFirestore = false
+ * - 성공: Firestore 데이터 반환 → isFirestore = true
+ * - 실패/빈 결과: 빈 배열 반환 → isFirestore = false
  */
 export function useMembers(options: UseMembersOptions = {}): UseMembersResult {
-  const [members, setMembers] = useState<Member[]>(mockMembers);
+  const [members, setMembers] = useState<Member[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [isFirestore, setIsFirestore] = useState(false);
@@ -115,26 +110,22 @@ export function useMembers(options: UseMembersOptions = {}): UseMembersResult {
         if (docs.length > 0) {
           const scopedMembers = docs
             .map(memberDocToMember)
-            .filter((member) => canAccessOrganization(options.role ?? 'superAdmin', options.organizationId, member.organizationId));
+            .filter((member) =>
+              canAccessOrganization(options.role ?? 'superAdmin', options.organizationId, member.organizationId, options.status),
+            );
           setMembers(scopedMembers);
           setIsFirestore(true);
         } else {
-          const fallbackMembers = mockMembers.filter((member) =>
-            canAccessOrganization(options.role ?? 'superAdmin', options.organizationId, member.organizationId),
-          );
-          setMembers(fallbackMembers);
+          setMembers([]);
           setIsFirestore(false);
         }
       } catch (err) {
         if (cancelled) return;
         const message = err instanceof Error ? err.message : 'Firestore members 읽기 실패';
         setError(message);
-        const fallbackMembers = mockMembers.filter((member) =>
-          canAccessOrganization(options.role ?? 'superAdmin', options.organizationId, member.organizationId),
-        );
-        setMembers(fallbackMembers);
+        setMembers([]);
         setIsFirestore(false);
-        console.warn('[useMembers] Firestore fetch failed, using mockData fallback:', message);
+        console.warn('[useMembers] Firestore fetch failed:', message);
       } finally {
         if (!cancelled) setLoading(false);
       }
@@ -157,13 +148,11 @@ interface UseMemberResult {
 /**
  * 단일 회원 데이터를 Firestore에서 가져오는 훅.
  *
- * - 성공: Firestore 데이터 + mockData 보강
- * - 실패: mockMembers에서 ID 매칭
+ * - 성공: Firestore 데이터 반환
+ * - 실패: null 반환
  */
 export function useMember(memberId: string | undefined, options: UseMembersOptions = {}): UseMemberResult {
-  const mockMember = memberId ? mockMembers.find((m) => m.id === memberId) ?? null : null;
-
-  const [member, setMember] = useState<Member | null>(mockMember);
+  const [member, setMember] = useState<Member | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [isFirestore, setIsFirestore] = useState(false);
@@ -191,7 +180,7 @@ export function useMember(memberId: string | undefined, options: UseMembersOptio
 
         if (doc) {
           const mappedMember = memberDocToMember(doc);
-          if (!canAccessOrganization(options.role ?? 'superAdmin', options.organizationId, mappedMember.organizationId)) {
+          if (!canAccessOrganization(options.role ?? 'superAdmin', options.organizationId, mappedMember.organizationId, options.status)) {
             setMember(null);
             setError('해당 조직의 회원을 볼 수 있는 권한이 없습니다.');
             setIsFirestore(true);
@@ -200,25 +189,16 @@ export function useMember(memberId: string | undefined, options: UseMembersOptio
           setMember(mappedMember);
           setIsFirestore(true);
         } else {
-          // Firestore에 해당 문서 없음 → mockData fallback
-          if (mockMember && canAccessOrganization(options.role ?? 'superAdmin', options.organizationId, mockMember.organizationId)) {
-            setMember(mockMember);
-          } else {
-            setMember(null);
-          }
+          setMember(null);
           setIsFirestore(false);
         }
       } catch (err) {
         if (cancelled) return;
         const message = err instanceof Error ? err.message : 'Firestore member 읽기 실패';
         setError(message);
-        if (mockMember && canAccessOrganization(options.role ?? 'superAdmin', options.organizationId, mockMember.organizationId)) {
-          setMember(mockMember);
-        } else {
-          setMember(null);
-        }
+        setMember(null);
         setIsFirestore(false);
-        console.warn('[useMember] Firestore fetch failed, using mockData fallback:', message);
+        console.warn('[useMember] Firestore fetch failed:', message);
       } finally {
         if (!cancelled) setLoading(false);
       }

@@ -5,10 +5,11 @@ import { useAuth } from '../contexts/AuthContext';
 import { summaryCards as mockSummaryCards } from '../data/mockData';
 import { useBlends } from '../hooks/useBlends';
 import { useMembers } from '../hooks/useMembers';
+import { getTodayDateString } from '../lib/date';
 
 export function DashboardPage() {
-  const { role, organizationId, canAccessOrg } = useAuth();
-  const { members, isFirestore } = useMembers({ role, organizationId });
+  const { role, organizationId, status, canAccessOrg } = useAuth();
+  const { members, isFirestore } = useMembers({ role, organizationId, status });
   const { blends, isFirestore: isBlendsFs } = useBlends();
   const visibleMembers = members.filter((member) => canAccessOrg(member.organizationId));
 
@@ -18,7 +19,7 @@ export function DashboardPage() {
   const attentionCount = visibleMembers.filter((m) => m.status === 'Attention').length;
   const checkCount = visibleMembers.filter((m) => m.status === 'Check').length;
 
-  const todayStr = new Date().toISOString().slice(0, 10);
+  const todayStr = getTodayDateString();
   const todayCheckedCount = visibleMembers.filter((m) =>
     m.lastCheckTime?.startsWith(todayStr),
   ).length;

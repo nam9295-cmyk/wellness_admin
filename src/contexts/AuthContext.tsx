@@ -1,18 +1,26 @@
-import { createContext, useCallback, useContext, useMemo, useState } from 'react';
+import { onAuthStateChanged } from 'firebase/auth';
+import { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react';
 import type { PropsWithChildren } from 'react';
-import type { UserRole } from '../types/member';
-import { canAccessOrganization, isAdminRole } from '../lib/accessControl';
+import { auth } from '../lib/firebase';
+import { fetchAdminUserById } from '../lib/firebase/reads';
+import type { AdminUserStatus, UserRole } from '../types/member';
+import { canAccessAdminRoute, canAccessOrganization, isAdminRole } from '../lib/accessControl';
 
 type AuthContextValue = {
   role: UserRole;
   setRole: (role: UserRole) => void;
   organizationId: string | null;
   setOrganizationId: (organizationId: string | null) => void;
+  uid: string | null;
+  status: AdminUserStatus | null;
+  isHydrating: boolean;
+  isSessionLocked: boolean;
   toggleRole: () => void;
   isAdmin: boolean;
   isSuperAdmin: boolean;
   isOrgAdmin: boolean;
   isParent: boolean;
+  hasAdminAccess: boolean;
   canAccessOrg: (targetOrganizationId: string | null | undefined) => boolean;
 };
 
@@ -20,26 +28,91 @@ const AuthContext = createContext<AuthContextValue | null>(null);
 
 export function AuthProvider({ children }: PropsWithChildren) {
   const [role, setRole] = useState<UserRole>('orgAdmin');
-  const [organizationId, setOrganizationId] = useState<string | null>('org-demo-001');
+  const [organizationId, setOrganizationId] = useState<string | null>('wellness-app');
+  const [uid, setUid] = useState<string | null>(null);
+  const [status, setStatus] = useState<AdminUserStatus | null>('active');
+  const [isHydrating, setIsHydrating] = useState(true);
+  const [isSessionLocked, setIsSessionLocked] = useState(false);
+
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, async (user) => {
+      setIsHydrating(true);
+
+      if (!user) {
+        setUid(null);
+        setStatus('active');
+        setIsSessionLocked(false);
+        setIsHydrating(false);
+        return;
+      }
+
+      setUid(user.uid);
+
+      try {
+        const adminUser = await fetchAdminUserById(user.uid);
+
+        if (!adminUser) {
+          setRole('parent');
+          setOrganizationId(null);
+          setStatus(null);
+          setIsSessionLocked(true);
+          return;
+        }
+
+        setRole(adminUser.role);
+        setOrganizationId(adminUser.organizationId);
+        setStatus(adminUser.status);
+        setIsSessionLocked(true);
+      } catch (error) {
+        console.error('[AuthProvider] failed to hydrate admin session:', error);
+        setRole('parent');
+        setOrganizationId(null);
+        setStatus(null);
+        setIsSessionLocked(true);
+      } finally {
+        setIsHydrating(false);
+      }
+    });
+
+    return unsubscribe;
+  }, []);
 
   const toggleRole = useCallback(() => {
+    if (isSessionLocked) return;
     setRole((prev) => (prev === 'parent' ? 'orgAdmin' : 'parent'));
-  }, []);
+  }, [isSessionLocked]);
+
+  const handleSetRole = useCallback((nextRole: UserRole) => {
+    if (isSessionLocked) return;
+    setRole(nextRole);
+  }, [isSessionLocked]);
+
+  const handleSetOrganizationId = useCallback((nextOrganizationId: string | null) => {
+    if (isSessionLocked) return;
+    setOrganizationId(nextOrganizationId);
+  }, [isSessionLocked]);
+
+  const hasAdminAccess = canAccessAdminRoute(role, status);
 
   const value = useMemo<AuthContextValue>(
     () => ({
       role,
-      setRole,
+      setRole: handleSetRole,
       organizationId,
-      setOrganizationId,
+      setOrganizationId: handleSetOrganizationId,
+      uid,
+      status,
+      isHydrating,
+      isSessionLocked,
       toggleRole,
-      isAdmin: isAdminRole(role),
+      isAdmin: hasAdminAccess,
       isSuperAdmin: role === 'superAdmin',
       isOrgAdmin: role === 'orgAdmin',
       isParent: role === 'parent',
-      canAccessOrg: (targetOrganizationId) => canAccessOrganization(role, organizationId, targetOrganizationId),
+      hasAdminAccess,
+      canAccessOrg: (targetOrganizationId) => canAccessOrganization(role, organizationId, targetOrganizationId, status),
     }),
-    [organizationId, role, toggleRole],
+    [handleSetOrganizationId, handleSetRole, hasAdminAccess, isHydrating, isSessionLocked, organizationId, role, status, toggleRole, uid],
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

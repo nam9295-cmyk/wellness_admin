@@ -15,8 +15,8 @@ export function MembersPage() {
   const [testAccountOnly, setTestAccountOnly] = useState(false);
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
 
-  const { role, organizationId, canAccessOrg, isSuperAdmin } = useAuth();
-  const { members, refetch } = useMembers({ role, organizationId });
+  const { role, organizationId, status, canAccessOrg, isSuperAdmin } = useAuth();
+  const { members, refetch } = useMembers({ role, organizationId, status });
   const { organizations } = useOrganizations();
 
   const scopedMembers = members.filter((member) => canAccessOrg(member.organizationId));

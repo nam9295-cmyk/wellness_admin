@@ -5,6 +5,7 @@ import type { MemberStatus, ParentChildView } from '../types/member';
 import { useConditionNotes } from '../hooks/useConditionNotes';
 import { useDailySummaries } from '../hooks/useDailySummaries';
 import { useMembers } from '../hooks/useMembers';
+import { formatDailySummaryValue } from '../lib/dailySummaryDisplay';
 
 const trendDotColor: Record<MemberStatus, string> = {
   Stable: 'bg-emerald-400',
@@ -34,6 +35,7 @@ export function ParentModePage() {
       todayChecked: mock?.todayChecked ?? false,
       todayMood: mock?.todayMood ?? '',
       sleepHours: mock?.sleepHours ?? '',
+      stress: mock?.stress ?? '',
       fatigue: mock?.fatigue ?? '',
       focus: mock?.focus ?? '',
       todayTea: m.todayRecommendedTea || mock?.todayTea || '',
@@ -65,10 +67,21 @@ export function ParentModePage() {
   // 오늘 컨디션 (dailySummary 우선, 없으면 mockData)
   const todayChecked = isSummaryFs && today ? true : child.todayChecked;
   const status = isSummaryFs && today ? today.status : child.status;
-  const todayMood = (isSummaryFs && today?.mood) || child.todayMood;
-  const sleepHours = (isSummaryFs && today?.sleep) || child.sleepHours;
-  const fatigue = (isSummaryFs && today?.fatigue) || child.fatigue;
-  const focus = (isSummaryFs && today?.focus) || child.focus;
+  const todayMood = isSummaryFs && today
+    ? formatDailySummaryValue('mood', today.mood)
+    : child.todayMood;
+  const sleepHours = isSummaryFs && today
+    ? formatDailySummaryValue('sleep', today.sleep)
+    : child.sleepHours;
+  const stress = isSummaryFs && today
+    ? formatDailySummaryValue('stress', today.stress)
+    : child.stress || '';
+  const fatigue = isSummaryFs && today
+    ? formatDailySummaryValue('fatigue', today.fatigue)
+    : child.fatigue;
+  const focus = isSummaryFs && today
+    ? formatDailySummaryValue('focus', today.focus)
+    : child.focus;
   const todayTea = (isSummaryFs && today?.blendName) || child.todayTea;
 
   // 최근 흐름 (dailySummaries → mockData fallback)
@@ -129,7 +142,7 @@ export function ParentModePage() {
         <h3 className="text-lg font-semibold text-slate-900">오늘 컨디션이에요</h3>
         <p className="mt-1 text-sm text-slate-500">선생님이 오전에 확인한 내용이에요</p>
 
-        <div className="mt-5 grid grid-cols-2 gap-4">
+        <div className="mt-5 grid grid-cols-2 gap-4 lg:grid-cols-5">
           <div className="rounded-2xl bg-slate-50 p-4">
             <p className="text-xs font-medium text-slate-500">기분</p>
             <p className="mt-1.5 text-xl font-semibold text-slate-900">{todayMood}</p>
@@ -137,6 +150,10 @@ export function ParentModePage() {
           <div className="rounded-2xl bg-slate-50 p-4">
             <p className="text-xs font-medium text-slate-500">수면</p>
             <p className="mt-1.5 text-xl font-semibold text-slate-900">{sleepHours}</p>
+          </div>
+          <div className="rounded-2xl bg-slate-50 p-4">
+            <p className="text-xs font-medium text-slate-500">스트레스</p>
+            <p className="mt-1.5 text-xl font-semibold text-slate-900">{stress || '기록 없음'}</p>
           </div>
           <div className="rounded-2xl bg-slate-50 p-4">
             <p className="text-xs font-medium text-slate-500">피로</p>
