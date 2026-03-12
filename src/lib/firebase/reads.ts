@@ -130,7 +130,16 @@ export interface ConditionNoteDoc {
 /** Firestore: members/{memberId}/savedTeas/{teaId} */
 export interface SavedTeaDoc {
   id: string;
-  teaId: string;
+  teaId: string | null;
+  type: 'preset' | 'custom' | 'cwater' | 'unknown';
+  blendSource: 'legacy' | 'cwater' | 'unknown';
+  catalogId: string | null;
+  teaIds: string[];
+  cacaoNibLevel: number | null;
+  displayName: string;
+  summary: string;
+  detail: string;
+  tags: string[];
   savedAt: string;
   reason: string;
 }
@@ -353,18 +362,72 @@ export async function fetchSavedTeas(
   return snapshot.docs
     .map((d) => {
       const data = d.data() as Record<string, unknown>;
+      const inferredType: SavedTeaDoc['type'] =
+        data.type === 'preset' || data.type === 'custom' || data.type === 'cwater'
+          ? data.type
+          : data.blendSource === 'cwater' || d.id.startsWith('cwater:')
+            ? 'cwater'
+            : typeof data.teaId === 'string'
+              ? 'preset'
+              : 'unknown';
+      const inferredBlendSource: SavedTeaDoc['blendSource'] =
+        data.blendSource === 'legacy' || data.blendSource === 'cwater'
+          ? data.blendSource
+          : inferredType === 'cwater'
+            ? 'cwater'
+            : inferredType === 'preset' || inferredType === 'custom'
+              ? 'legacy'
+              : 'unknown';
+      const reason =
+        typeof data.reason === 'string' && data.reason.length > 0
+          ? data.reason
+          : typeof data.summary === 'string' && data.summary.length > 0
+            ? data.summary
+            : typeof data.shortDescription === 'string' && data.shortDescription.length > 0
+              ? data.shortDescription
+              : typeof data.note === 'string' && data.note.length > 0
+                ? data.note
+                : typeof data.memo === 'string' && data.memo.length > 0
+                  ? data.memo
+                  : '앱에서 저장된 블렌드';
+
       return {
         id: d.id,
-        teaId: typeof data.teaId === 'string' && data.teaId.length > 0 ? data.teaId : d.id,
+        teaId:
+          typeof data.teaId === 'string' && data.teaId.length > 0
+            ? data.teaId
+            : inferredType === 'preset'
+              ? d.id
+              : null,
+        type: inferredType,
+        blendSource: inferredBlendSource,
+        catalogId: typeof data.catalogId === 'string' && data.catalogId.length > 0 ? data.catalogId : null,
+        teaIds: Array.isArray(data.teaIds)
+          ? data.teaIds.filter((value): value is string => typeof value === 'string')
+          : [],
+        cacaoNibLevel: typeof data.cacaoNibLevel === 'number' ? data.cacaoNibLevel : null,
+        displayName:
+          typeof data.displayName === 'string' && data.displayName.length > 0
+            ? data.displayName
+            : typeof data.title === 'string' && data.title.length > 0
+              ? data.title
+              : typeof data.name === 'string' && data.name.length > 0
+                ? data.name
+                : typeof data.teaId === 'string' && data.teaId.length > 0
+                  ? data.teaId
+                  : d.id,
+        summary: typeof data.summary === 'string' ? data.summary : '',
+        detail:
+          typeof data.detail === 'string' && data.detail.length > 0
+            ? data.detail
+            : typeof data.summary === 'string'
+              ? data.summary
+              : '',
+        tags: Array.isArray(data.tags)
+          ? data.tags.filter((value): value is string => typeof value === 'string')
+          : [],
         savedAt: toDateText(data.savedAt ?? data.createdAt ?? data.updatedAt),
-        reason:
-          typeof data.reason === 'string' && data.reason.length > 0
-            ? data.reason
-            : typeof data.note === 'string' && data.note.length > 0
-              ? data.note
-              : typeof data.memo === 'string' && data.memo.length > 0
-                ? data.memo
-                : '앱에서 저장된 블렌드',
+        reason,
       };
     })
     .sort((a, b) => {
