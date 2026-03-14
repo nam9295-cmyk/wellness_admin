@@ -1,8 +1,40 @@
 @import "tailwindcss";
 
+@theme {
+  /* Brand Colors */
+  --color-brand-primary: #EDC5C4;
+  --color-brand-primary-light: #F6DEDF;
+  --color-brand-bg: #FAF9F6;
+  --color-brand-card: #FFFFFF;
+  --color-brand-text: #4A4443;
+  --color-brand-text-light: #8A8180;
+  --color-brand-border: #F0EBEA;
+  --color-brand-success: #B3C5B5;
+  --color-brand-error: #D98880;
+
+  /* Atelier Colors */
+  --color-atelier-bg: #F4EFE7;
+  --color-atelier-surface: #FFFDF8;
+  --color-atelier-surface-muted: #F7F1E8;
+  --color-atelier-title: #231F1C;
+  --color-atelier-text: #3D3631;
+  --color-atelier-text-muted: #675F59;
+  --color-atelier-text-soft: #91887F;
+  --color-atelier-border: #E5DBCE;
+  --color-atelier-border-strong: #D7C9B9;
+  --color-atelier-deep-green: #4E6B61;
+  --color-atelier-deep-green-soft: #6F8A80;
+  --color-atelier-deep-green-muted: #E2E9E3;
+  --color-atelier-dusty-rose: #E6D9D4;
+  --color-atelier-cocoa: #5C4337;
+  --color-atelier-cocoa-strong: #3B2E27;
+  --color-atelier-cocoa-soft: #7B5D4E;
+  --color-atelier-chip: #F2EAE1;
+}
+
 :root {
-  color: #0f172a;
-  background: #f1f5f9;
+  color: var(--color-atelier-text);
+  background: var(--color-brand-bg);
   font-family:
     "Pretendard",
     "Noto Sans KR",
@@ -19,9 +51,7 @@
 body {
   margin: 0;
   min-width: 320px;
-  background:
-    radial-gradient(circle at top, rgba(45, 212, 191, 0.12), transparent 30%),
-    #f1f5f9;
+  background: var(--color-brand-bg);
 }
 
 a {

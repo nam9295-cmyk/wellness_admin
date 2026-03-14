@@ -47,7 +47,7 @@ export function AddMemberModal({ open, onClose, onSubmit }: AddMemberModalProps)
     <div className="fixed inset-0 z-50 flex items-center justify-center">
       {/* Backdrop */}
       <div
-        className="absolute inset-0 bg-slate-900/40 backdrop-blur-sm"
+        className="absolute inset-0 bg-atelier-cocoa-strong/40 backdrop-blur-sm"
         onClick={onClose}
         onKeyDown={(e) => e.key === 'Escape' && onClose()}
         role="button"
@@ -56,16 +56,16 @@ export function AddMemberModal({ open, onClose, onSubmit }: AddMemberModalProps)
       />
 
       {/* Modal */}
-      <div className="relative mx-4 w-full max-w-lg rounded-3xl bg-white p-6 shadow-xl sm:p-8">
+      <div className="relative mx-4 w-full max-w-lg rounded-[24px] bg-atelier-surface p-6 shadow-xl sm:p-8">
         <div className="mb-6 flex items-center justify-between">
           <div>
-            <h3 className="text-xl font-semibold text-slate-900">회원 등록</h3>
-            <p className="mt-1 text-sm text-slate-500">새 회원의 기본 정보를 입력합니다</p>
+            <h3 className="text-xl font-semibold text-atelier-title">회원 등록</h3>
+            <p className="mt-1 text-sm text-atelier-text-soft">새 회원의 기본 정보를 입력합니다</p>
           </div>
           <button
             type="button"
             onClick={onClose}
-            className="rounded-xl p-2 text-slate-400 transition hover:bg-slate-100 hover:text-slate-600"
+            className="rounded-xl p-2 text-atelier-text-soft transition hover:bg-atelier-surface-muted hover:text-atelier-text"
           >
             <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
               <path d="M15 5L5 15M5 5l10 10" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
@@ -76,14 +76,14 @@ export function AddMemberModal({ open, onClose, onSubmit }: AddMemberModalProps)
         <form onSubmit={handleSubmit} className="space-y-4">
           {/* 이름 */}
           <div>
-            <label htmlFor="member-name" className="mb-1.5 block text-sm font-medium text-slate-700">
-              이름 <span className="text-rose-500">*</span>
+            <label htmlFor="member-name" className="mb-1.5 block text-sm font-medium text-atelier-text">
+              이름 <span className="text-brand-error">*</span>
             </label>
             <input
               id="member-name"
               value={form.name}
               onChange={(e) => handleChange('name', e.target.value)}
-              className="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-2.5 text-sm text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-teal-500"
+              className="w-full rounded-xl border border-atelier-border bg-brand-bg px-4 py-2.5 text-sm text-atelier-text outline-none transition placeholder:text-atelier-text-soft focus:border-atelier-deep-green"
               placeholder="회원 이름"
             />
           </div>
@@ -91,14 +91,14 @@ export function AddMemberModal({ open, onClose, onSubmit }: AddMemberModalProps)
           {/* 그룹 + 방/호실 */}
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <label htmlFor="member-group" className="mb-1.5 block text-sm font-medium text-slate-700">
-                그룹 <span className="text-rose-500">*</span>
+              <label htmlFor="member-group" className="mb-1.5 block text-sm font-medium text-atelier-text">
+                그룹 <span className="text-brand-error">*</span>
               </label>
               <select
                 id="member-group"
                 value={form.group}
                 onChange={(e) => handleChange('group', e.target.value)}
-                className="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-2.5 text-sm text-slate-900 outline-none transition focus:border-teal-500"
+                className="w-full rounded-xl border border-atelier-border bg-brand-bg px-4 py-2.5 text-sm text-atelier-text outline-none transition focus:border-atelier-deep-green"
               >
                 <option value="">선택</option>
                 {GROUP_OPTIONS.map((g) => (
@@ -107,14 +107,14 @@ export function AddMemberModal({ open, onClose, onSubmit }: AddMemberModalProps)
               </select>
             </div>
             <div>
-              <label htmlFor="member-room" className="mb-1.5 block text-sm font-medium text-slate-700">
-                방/호실 <span className="text-rose-500">*</span>
+              <label htmlFor="member-room" className="mb-1.5 block text-sm font-medium text-atelier-text">
+                방/호실 <span className="text-brand-error">*</span>
               </label>
               <input
                 id="member-room"
                 value={form.room}
                 onChange={(e) => handleChange('room', e.target.value)}
-                className="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-2.5 text-sm text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-teal-500"
+                className="w-full rounded-xl border border-atelier-border bg-brand-bg px-4 py-2.5 text-sm text-atelier-text outline-none transition placeholder:text-atelier-text-soft focus:border-atelier-deep-green"
                 placeholder="A-201"
               />
             </div>
@@ -122,8 +122,8 @@ export function AddMemberModal({ open, onClose, onSubmit }: AddMemberModalProps)
 
           {/* 나이 */}
           <div>
-            <label htmlFor="member-age" className="mb-1.5 block text-sm font-medium text-slate-700">
-              나이 <span className="text-rose-500">*</span>
+            <label htmlFor="member-age" className="mb-1.5 block text-sm font-medium text-atelier-text">
+              나이 <span className="text-brand-error">*</span>
             </label>
             <input
               id="member-age"
@@ -132,22 +132,22 @@ export function AddMemberModal({ open, onClose, onSubmit }: AddMemberModalProps)
               max="150"
               value={form.age}
               onChange={(e) => handleChange('age', e.target.value)}
-              className="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-2.5 text-sm text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-teal-500"
+              className="w-full rounded-xl border border-atelier-border bg-brand-bg px-4 py-2.5 text-sm text-atelier-text outline-none transition placeholder:text-atelier-text-soft focus:border-atelier-deep-green"
               placeholder="78"
             />
           </div>
 
           {/* 가족 공유 허용 */}
-          <div className="flex items-center justify-between rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3.5">
+          <div className="flex items-center justify-between rounded-[18px] border border-atelier-border bg-brand-bg px-4 py-3.5">
             <div>
-              <p className="text-sm font-medium text-slate-700">가족 공유 허용</p>
-              <p className="mt-0.5 text-xs text-slate-500">활성화 시 가족 홈에서 컨디션 요약을 볼 수 있습니다</p>
+              <p className="text-sm font-medium text-atelier-text">가족 공유 허용</p>
+              <p className="mt-0.5 text-xs text-atelier-text-soft">활성화 시 가족 홈에서 컨디션 요약을 볼 수 있습니다</p>
             </div>
             <button
               type="button"
               onClick={() => handleChange('parentSharingEnabled', !form.parentSharingEnabled)}
               className={`relative h-6 w-11 shrink-0 rounded-full transition ${
-                form.parentSharingEnabled ? 'bg-teal-600' : 'bg-slate-300'
+                form.parentSharingEnabled ? 'bg-atelier-deep-green' : 'bg-atelier-border-strong'
               }`}
             >
               <span
@@ -160,14 +160,14 @@ export function AddMemberModal({ open, onClose, onSubmit }: AddMemberModalProps)
 
           {/* 오늘 추천 블렌드 (선택) */}
           <div>
-            <label htmlFor="member-tea" className="mb-1.5 block text-sm font-medium text-slate-700">
-              오늘 추천 블렌드 <span className="text-xs text-slate-400">(선택)</span>
+            <label htmlFor="member-tea" className="mb-1.5 block text-sm font-medium text-atelier-text">
+              오늘 추천 블렌드 <span className="text-xs text-atelier-text-soft">(선택)</span>
             </label>
             <input
               id="member-tea"
               value={form.todayRecommendedTea}
               onChange={(e) => handleChange('todayRecommendedTea', e.target.value)}
-              className="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-2.5 text-sm text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-teal-500"
+              className="w-full rounded-xl border border-atelier-border bg-brand-bg px-4 py-2.5 text-sm text-atelier-text outline-none transition placeholder:text-atelier-text-soft focus:border-atelier-deep-green"
               placeholder="캐모마일 블렌드"
             />
           </div>
@@ -177,14 +177,14 @@ export function AddMemberModal({ open, onClose, onSubmit }: AddMemberModalProps)
             <button
               type="button"
               onClick={onClose}
-              className="rounded-xl px-5 py-2.5 text-sm font-semibold text-slate-600 transition hover:bg-slate-100"
+              className="rounded-xl px-5 py-2.5 text-sm font-semibold text-atelier-text-soft transition hover:bg-atelier-surface-muted"
             >
               취소
             </button>
             <button
               type="submit"
               disabled={!isValid}
-              className="rounded-xl bg-teal-600 px-5 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-teal-700 disabled:cursor-not-allowed disabled:opacity-40"
+              className="rounded-xl bg-atelier-deep-green px-5 py-2.5 text-sm font-semibold text-atelier-surface shadow-sm transition hover:bg-atelier-deep-green/90 disabled:cursor-not-allowed disabled:opacity-40"
             >
               등록하기
             </button>

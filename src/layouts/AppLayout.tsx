@@ -25,7 +25,7 @@ export function AppLayout() {
     : titles[location.pathname] ?? (isParent ? '우리 가족' : '대시보드');
 
   return (
-    <div className="min-h-screen bg-slate-100 text-slate-900">
+    <div className="min-h-screen bg-brand-bg text-atelier-text">
       <div className="flex min-h-screen">
         <Sidebar />
         <div className="flex min-h-screen flex-1 flex-col">

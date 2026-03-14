@@ -38,10 +38,10 @@ export function DashboardPage() {
     <div className="space-y-6">
       <section className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
         {dashboardCards.map((card) => (
-          <div key={card.label} className="rounded-3xl bg-slate-900 p-5 text-white shadow-sm">
-            <p className="text-sm text-slate-300">{card.label}</p>
+          <div key={card.label} className="rounded-[24px] bg-atelier-deep-green p-5 text-atelier-surface shadow-sm">
+            <p className="text-sm text-atelier-surface-muted">{card.label}</p>
             <p className="mt-3 text-3xl font-semibold">{card.value}</p>
-            <p className="mt-2 text-sm text-teal-300">{card.change}</p>
+            <p className="mt-2 text-sm text-brand-primary-light">{card.change}</p>
           </div>
         ))}
       </section>
@@ -50,17 +50,17 @@ export function DashboardPage() {
         <PageSection title="오늘 회원 현황" description="체크인 기준, 주요 회원의 현재 상태입니다">
             <div className="space-y-3">
             {visibleMembers.map((member) => (
-              <Link key={member.id} to={`/members/${member.id}`} className="group flex flex-col gap-3 rounded-2xl border border-slate-200 p-4 transition-colors hover:bg-teal-50/60 sm:flex-row sm:items-center sm:justify-between">
+              <Link key={member.id} to={`/members/${member.id}`} className="group flex flex-col gap-3 rounded-2xl border border-atelier-border p-4 transition-colors hover:bg-brand-primary-light/30 sm:flex-row sm:items-center sm:justify-between">
                 <div>
-                  <p className="font-semibold text-slate-900">{member.name}</p>
-                  <p className="text-sm text-slate-500">
+                  <p className="font-semibold text-atelier-title">{member.name}</p>
+                  <p className="text-sm text-atelier-text-soft">
                     {member.group} · {member.room} · 가족 {member.parentConnection.guardianName ?? '미연결'}
                   </p>
                 </div>
                 <div className="flex items-center gap-3">
                   <StatusBadge status={member.status} />
-                  <span className="text-sm text-slate-500">{member.lastCheckTime}</span>
-                  <span className="text-slate-400 transition-transform group-hover:translate-x-0.5 group-hover:text-teal-600">→</span>
+                  <span className="text-sm text-atelier-text-soft">{member.lastCheckTime}</span>
+                  <span className="text-atelier-border-strong transition-transform group-hover:translate-x-0.5 group-hover:text-atelier-deep-green">→</span>
                 </div>
               </Link>
             ))}
@@ -68,10 +68,10 @@ export function DashboardPage() {
         </PageSection>
 
         <PageSection title="오늘의 메모" description="운영 중 참고할 사항을 모아두는 공간입니다">
-          <div className="space-y-3 text-sm text-slate-600">
-            <div className="rounded-2xl bg-teal-50 p-4">오전 체크인 미완료 회원 4명, 확인이 필요합니다</div>
-            <div className="rounded-2xl bg-amber-50 p-4">혈압 재측정 대상 2명, 오후 라운딩에 포함 예정</div>
-            <div className="rounded-2xl bg-slate-100 p-4">가족 문의 5건 미확인, 가족 홈에서 응대 가능</div>
+          <div className="space-y-3 text-sm text-atelier-text">
+            <div className="rounded-2xl bg-brand-primary-light/40 p-4">오전 체크인 미완료 회원 4명, 확인이 필요합니다</div>
+            <div className="rounded-2xl bg-atelier-dusty-rose/40 p-4">혈압 재측정 대상 2명, 오후 라운딩에 포함 예정</div>
+            <div className="rounded-2xl bg-atelier-chip p-4">가족 문의 5건 미확인, 가족 홈에서 응대 가능</div>
           </div>
         </PageSection>
       </div>

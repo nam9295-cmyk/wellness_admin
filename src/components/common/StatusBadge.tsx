@@ -5,9 +5,9 @@ type StatusBadgeProps = {
 };
 
 const statusClassName: Record<MemberStatus, string> = {
-  Stable: 'bg-emerald-100 text-emerald-800',
-  Attention: 'bg-amber-100 text-amber-800',
-  Check: 'bg-sky-100 text-sky-800',
+  Stable: 'bg-brand-success/20 text-brand-success',
+  Attention: 'bg-brand-error/20 text-brand-error',
+  Check: 'bg-atelier-dusty-rose text-atelier-cocoa-strong',
 };
 
 export function StatusBadge({ status }: StatusBadgeProps) {

@@ -8,9 +8,9 @@ import { useMembers } from '../hooks/useMembers';
 import { formatDailySummaryValue } from '../lib/dailySummaryDisplay';
 
 const trendDotColor: Record<MemberStatus, string> = {
-  Stable: 'bg-emerald-400',
-  Attention: 'bg-amber-400',
-  Check: 'bg-sky-400',
+  Stable: 'bg-brand-success',
+  Attention: 'bg-brand-error',
+  Check: 'bg-brand-primary',
 };
 
 const heroOneLiner: Record<MemberStatus, string> = {
@@ -54,9 +54,9 @@ export function ParentModePage() {
 
   if (!child) {
     return (
-      <div className="rounded-3xl border border-slate-200 bg-white p-8 text-center">
-        <p className="text-lg font-semibold text-slate-900">연결된 가족 정보가 없어요</p>
-        <p className="mt-2 text-sm text-slate-500">관리자에게 문의해 가족 연결을 진행해 주세요.</p>
+      <div className="rounded-[24px] border border-atelier-border bg-atelier-surface p-8 text-center">
+        <p className="text-lg font-semibold text-atelier-title">연결된 가족 정보가 없어요</p>
+        <p className="mt-2 text-sm text-atelier-text-soft">관리자에게 문의해 가족 연결을 진행해 주세요.</p>
       </div>
     );
   }
@@ -106,8 +106,8 @@ export function ParentModePage() {
               onClick={() => setSelectedChildId(c.childId)}
               className={`rounded-2xl px-5 py-3 text-sm font-semibold transition ${
                 c.childId === selectedChildId
-                  ? 'bg-teal-600 text-white shadow-sm'
-                  : 'bg-white text-slate-600 ring-1 ring-slate-200 hover:bg-slate-50'
+                  ? 'bg-atelier-deep-green text-white shadow-sm'
+                  : 'bg-atelier-surface text-atelier-text-muted ring-1 ring-atelier-border hover:bg-atelier-surface-muted'
               }`}
             >
               {c.childName}
@@ -117,8 +117,8 @@ export function ParentModePage() {
       ) : null}
 
       {/* ── 인사 영역 + 오늘의 한마디 ── */}
-      <section className="rounded-3xl bg-gradient-to-br from-teal-500 via-teal-600 to-emerald-700 p-6 text-white shadow-sm sm:p-8">
-        <p className="text-sm font-medium text-teal-100">
+      <section className="rounded-[28px] bg-gradient-to-br from-atelier-deep-green to-atelier-cocoa-strong p-6 text-white shadow-sm sm:p-8">
+        <p className="text-sm font-medium text-brand-primary-light">
           {todayChecked ? '오늘 체크인 완료' : '체크인 대기 중'}
         </p>
         <h2 className="mt-2 text-3xl font-semibold">{child.childName}님, 오늘도 좋은 하루예요</h2>
@@ -138,63 +138,63 @@ export function ParentModePage() {
       </section>
 
       {/* ── 오늘 컨디션 요약 (sub-label 제거) ── */}
-      <section className="rounded-3xl border border-slate-200 bg-white p-5 shadow-sm sm:p-6">
-        <h3 className="text-lg font-semibold text-slate-900">오늘 컨디션이에요</h3>
-        <p className="mt-1 text-sm text-slate-500">선생님이 오전에 확인한 내용이에요</p>
+      <section className="rounded-[24px] border border-atelier-border bg-atelier-surface p-5 shadow-sm sm:p-6">
+        <h3 className="text-lg font-semibold text-atelier-title">오늘 컨디션이에요</h3>
+        <p className="mt-1 text-sm text-atelier-text-soft">선생님이 오전에 확인한 내용이에요</p>
 
         <div className="mt-5 grid grid-cols-2 gap-4 lg:grid-cols-5">
-          <div className="rounded-2xl bg-slate-50 p-4">
-            <p className="text-xs font-medium text-slate-500">기분</p>
-            <p className="mt-1.5 text-xl font-semibold text-slate-900">{todayMood}</p>
+          <div className="rounded-2xl bg-atelier-surface-muted p-4 border border-atelier-border">
+            <p className="text-xs font-medium text-atelier-text-soft">기분</p>
+            <p className="mt-1.5 text-xl font-semibold text-atelier-title">{todayMood}</p>
           </div>
-          <div className="rounded-2xl bg-slate-50 p-4">
-            <p className="text-xs font-medium text-slate-500">수면</p>
-            <p className="mt-1.5 text-xl font-semibold text-slate-900">{sleepHours}</p>
+          <div className="rounded-2xl bg-atelier-surface-muted p-4 border border-atelier-border">
+            <p className="text-xs font-medium text-atelier-text-soft">수면</p>
+            <p className="mt-1.5 text-xl font-semibold text-atelier-title">{sleepHours}</p>
           </div>
-          <div className="rounded-2xl bg-slate-50 p-4">
-            <p className="text-xs font-medium text-slate-500">스트레스</p>
-            <p className="mt-1.5 text-xl font-semibold text-slate-900">{stress || '기록 없음'}</p>
+          <div className="rounded-2xl bg-atelier-surface-muted p-4 border border-atelier-border">
+            <p className="text-xs font-medium text-atelier-text-soft">스트레스</p>
+            <p className="mt-1.5 text-xl font-semibold text-atelier-title">{stress || '기록 없음'}</p>
           </div>
-          <div className="rounded-2xl bg-slate-50 p-4">
-            <p className="text-xs font-medium text-slate-500">피로</p>
-            <p className="mt-1.5 text-xl font-semibold text-slate-900">{fatigue}</p>
+          <div className="rounded-2xl bg-atelier-surface-muted p-4 border border-atelier-border">
+            <p className="text-xs font-medium text-atelier-text-soft">피로</p>
+            <p className="mt-1.5 text-xl font-semibold text-atelier-title">{fatigue}</p>
           </div>
-          <div className="rounded-2xl bg-slate-50 p-4">
-            <p className="text-xs font-medium text-slate-500">집중</p>
-            <p className="mt-1.5 text-xl font-semibold text-slate-900">{focus}</p>
+          <div className="rounded-2xl bg-atelier-surface-muted p-4 border border-atelier-border">
+            <p className="text-xs font-medium text-atelier-text-soft">집중</p>
+            <p className="mt-1.5 text-xl font-semibold text-atelier-title">{focus}</p>
           </div>
         </div>
       </section>
 
       {/* ── 선생님 메시지 — letter-style single block ── */}
-      <section className="rounded-3xl border border-slate-200 bg-white p-5 shadow-sm sm:p-6">
-        <h3 className="text-lg font-semibold text-slate-900">선생님이 전하는 이야기</h3>
-        <p className="mt-1 text-sm text-slate-500">오늘 눈여겨본 부분을 알려드려요</p>
+      <section className="rounded-[24px] border border-atelier-border bg-atelier-surface p-5 shadow-sm sm:p-6">
+        <h3 className="text-lg font-semibold text-atelier-title">선생님이 전하는 이야기</h3>
+        <p className="mt-1 text-sm text-atelier-text-soft">오늘 눈여겨본 부분을 알려드려요</p>
 
         {visibleNotes.length > 0 ? (
-          <div className="mt-5 rounded-2xl bg-teal-50/60 px-6 py-5">
+          <div className="mt-5 rounded-2xl bg-brand-primary-light/30 px-6 py-5">
             {visibleNotes.map((note, idx) => (
               <div key={note.id}>
-                <p className="text-sm leading-relaxed text-teal-900">{note.content}</p>
+                <p className="text-sm leading-relaxed text-atelier-text">{note.content}</p>
                 {idx < visibleNotes.length - 1 && (
-                  <hr className="my-3 border-teal-200/60" />
+                  <hr className="my-3 border-brand-primary-light/50" />
                 )}
               </div>
             ))}
           </div>
         ) : (
-          <p className="mt-5 text-sm text-slate-400">아직 전달할 내용이 없어요</p>
+          <p className="mt-5 text-sm text-atelier-text-soft">아직 전달할 내용이 없어요</p>
         )}
       </section>
 
       {/* ── 오늘의 추천 블렌드 — light card ── */}
-      <section className="rounded-3xl border border-slate-200 bg-white p-5 shadow-sm sm:p-6">
-        <h3 className="text-lg font-semibold text-slate-900">오늘의 추천 블렌드</h3>
-        <div className="mt-4 flex items-center gap-4 rounded-2xl bg-emerald-50/70 px-5 py-4">
+      <section className="rounded-[24px] border border-atelier-border bg-atelier-surface p-5 shadow-sm sm:p-6">
+        <h3 className="text-lg font-semibold text-atelier-title">오늘의 추천 블렌드</h3>
+        <div className="mt-4 flex items-center gap-4 rounded-2xl bg-brand-success/20 px-5 py-4 border border-brand-success/30">
           <span className="text-2xl">🍵</span>
           <div>
-            <p className="text-base font-semibold text-emerald-900">{todayTea}</p>
-            <p className="mt-0.5 text-sm text-emerald-700/80">
+            <p className="text-base font-semibold text-atelier-text">{todayTea}</p>
+            <p className="mt-0.5 text-sm text-atelier-text-soft">
               오늘 컨디션에 맞춰 선생님이 추천해 드린 블렌드예요
             </p>
           </div>
@@ -202,38 +202,38 @@ export function ParentModePage() {
       </section>
 
       {/* ── 최근 며칠간의 흐름 — compact ── */}
-      <section className="rounded-3xl border border-slate-200 bg-white p-5 shadow-sm sm:p-6">
-        <h3 className="text-lg font-semibold text-slate-900">최근 며칠간의 흐름</h3>
-        <p className="mt-1 text-sm text-slate-500">생활 리듬을 한눈에 볼 수 있어요</p>
+      <section className="rounded-[24px] border border-atelier-border bg-atelier-surface p-5 shadow-sm sm:p-6">
+        <h3 className="text-lg font-semibold text-atelier-title">최근 며칠간의 흐름</h3>
+        <p className="mt-1 text-sm text-atelier-text-soft">생활 리듬을 한눈에 볼 수 있어요</p>
 
         <div className="mt-4 space-y-0.5">
           {recentTrend.map((day) => (
-            <div key={day.day} className="flex items-center gap-3 rounded-xl px-3 py-2 transition hover:bg-slate-50">
-              <span className="w-11 shrink-0 text-xs font-semibold text-slate-500">{day.day}</span>
+            <div key={day.day} className="flex items-center gap-3 rounded-xl px-3 py-2 transition hover:bg-atelier-surface-muted">
+              <span className="w-11 shrink-0 text-xs font-semibold text-atelier-text-soft">{day.day}</span>
               <span className={`h-2 w-2 shrink-0 rounded-full ${trendDotColor[day.status]}`} />
-              <span className="text-xs text-slate-600">{day.parentSummary}</span>
+              <span className="text-xs text-atelier-text-muted">{day.parentSummary}</span>
             </div>
           ))}
         </div>
       </section>
 
       {/* ── 응원하기 — consolidated ── */}
-      <section className="rounded-3xl border border-slate-200 bg-white p-5 shadow-sm sm:p-6">
+      <section className="rounded-[24px] border border-atelier-border bg-atelier-surface p-5 shadow-sm sm:p-6">
         <div className="flex items-baseline justify-between">
-          <h3 className="text-lg font-semibold text-slate-900">응원 한마디</h3>
-          <span className="text-xs text-slate-400">
+          <h3 className="text-lg font-semibold text-atelier-title">응원 한마디</h3>
+          <span className="text-xs text-atelier-text-soft">
             이번 주 {child.encouragements.length}회 · 전체 {child.rewardCount}회
           </span>
         </div>
-        <p className="mt-1 text-sm text-slate-500">따뜻한 말 한마디가 큰 힘이 돼요</p>
+        <p className="mt-1 text-sm text-atelier-text-soft">따뜻한 말 한마디가 큰 힘이 돼요</p>
 
         {/* 기존 응원 기록 */}
         {child.encouragements.length > 0 ? (
           <div className="mt-4 space-y-1.5">
             {child.encouragements.map((enc, index) => (
-              <div key={index} className="flex items-start justify-between rounded-xl bg-amber-50/70 px-4 py-2.5">
-                <p className="text-sm text-amber-900">{enc.message}</p>
-                <span className="shrink-0 pl-3 text-xs text-amber-500">{enc.date}</span>
+              <div key={index} className="flex items-start justify-between rounded-xl bg-brand-error/10 px-4 py-2.5">
+                <p className="text-sm text-atelier-text">{enc.message}</p>
+                <span className="shrink-0 pl-3 text-xs text-brand-error">{enc.date}</span>
               </div>
             ))}
           </div>
@@ -242,7 +242,7 @@ export function ParentModePage() {
         {/* 단일 CTA 버튼 */}
         <button
           type="button"
-          className="mt-4 w-full rounded-2xl bg-teal-600 px-5 py-3.5 text-sm font-semibold text-white shadow-sm transition hover:bg-teal-700"
+          className="mt-4 w-full rounded-2xl bg-atelier-deep-green px-5 py-3.5 text-sm font-semibold text-atelier-surface shadow-sm transition hover:bg-atelier-deep-green/90"
         >
           응원 메시지 보내기
         </button>

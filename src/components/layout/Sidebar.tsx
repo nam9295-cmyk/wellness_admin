@@ -22,10 +22,10 @@ export function Sidebar() {
   const visibleItems = navigationItems.filter((item) => item.roles.includes(role));
 
   return (
-    <aside className="hidden w-72 flex-col border-r border-slate-200 bg-white lg:flex">
-      <div className="border-b border-slate-200 px-6 py-5">
-        <p className="text-xs font-semibold uppercase tracking-[0.24em] text-teal-600">Wellness</p>
-        <h1 className="mt-2 text-xl font-semibold text-slate-900">
+    <aside className="hidden w-72 flex-col border-r border-atelier-border bg-atelier-surface lg:flex">
+      <div className="border-b border-atelier-border px-6 py-5">
+        <p className="text-xs font-semibold uppercase tracking-[0.24em] text-atelier-deep-green">Wellness</p>
+        <h1 className="mt-2 text-xl font-semibold text-atelier-title">
           {isParent ? '가족 홈' : isSuperAdmin ? '전체 관리자 대시보드' : '업체 관리자 대시보드'}
         </h1>
       </div>
@@ -37,8 +37,10 @@ export function Sidebar() {
             to={item.to}
             end={item.end}
             className={({ isActive }) =>
-              `block rounded-xl px-4 py-3 text-sm font-medium transition ${
-                isActive ? 'bg-teal-600 text-white shadow-sm' : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900'
+              `block rounded-2xl px-4 py-3 text-sm font-medium transition ${
+                isActive
+                  ? 'bg-atelier-deep-green text-white shadow-sm'
+                  : 'text-atelier-text-muted hover:bg-atelier-surface-muted hover:text-atelier-text'
               }`
             }
           >
@@ -47,12 +49,12 @@ export function Sidebar() {
         ))}
       </nav>
 
-      <div className="border-t border-slate-200 px-4 py-5">
-        <div className={`rounded-2xl p-4 text-sm ${isParent ? 'bg-teal-600 text-teal-50' : 'bg-slate-900 text-slate-100'}`}>
+      <div className="border-t border-atelier-border px-4 py-5">
+        <div className={`rounded-[24px] p-4 text-sm ${isParent ? 'bg-atelier-deep-green text-atelier-surface' : 'bg-atelier-surface-muted text-atelier-text border border-atelier-border'}`}>
           <p className="font-semibold">
             {isParent ? '가족 모드로 보고 있어요' : isSuperAdmin ? '조직 전체를 볼 수 있어요' : '현재 조직 범위로 보고 있어요'}
           </p>
-          <p className={`mt-1 ${isParent ? 'text-teal-100' : 'text-slate-300'}`}>
+          <p className={`mt-1 ${isParent ? 'text-atelier-deep-green-muted' : 'text-atelier-text-soft'}`}>
             {isParent
               ? '내 가족의 오늘 컨디션을 확인해 보세요.'
               : isSuperAdmin
